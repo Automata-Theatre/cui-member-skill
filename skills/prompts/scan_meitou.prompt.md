@@ -31,4 +31,8 @@ description: '自動掃描美投侃新闻最新影片，判斷是否已下載，
 5. **結束任務**: 若你是單獨執行 `/scan_meitou`，請到此（完成 `/summarize`）為止，向使用者回報「美投侃新闻：新影片已下載並完成摘要」，**不要**接著執行 `/scan_cui`、`/compare`、`/sync` 或 `/archive`。
 
 ### 注意
+- **⚠️ 處理 Cookie 錯誤（[COOKIE_ERROR]）**：若執行 `get_latest_video.py` 或 `download_audio.py` 時遇到 `[COOKIE_ERROR]` 或因 YouTube 認證失敗而中斷，請**立即終止**所有後續流程（不可繼續下載或摘要）。請向使用者提示目前的 Cookie 檔案路徑（如 `.env` 中的 `COOKIES_PATH` 或是預設的 `./cookies.txt`），並詢問使用者要選擇以下哪種方式處理：
+  1. 手動更新目前的 Cookie 檔案（提示檔案路徑）
+  2. 指定另一個新的 Cookie 檔案路徑
+  3. 改為從瀏覽器自動讀取 Cookie（請使用者指定瀏覽器，例如 chrome, edge, firefox）
 - 回報與執行結果請使用**繁體中文**。

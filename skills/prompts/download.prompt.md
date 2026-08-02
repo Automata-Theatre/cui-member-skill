@@ -29,5 +29,8 @@ docker exec cui-tools uv run skills/download_audio.py "${input:url}"
 
 ### 注意
 - 預設會讀取 `.env` 中的 `COOKIES_PATH`（通常為 `./cookies.txt`）以下載會員限定影片。
-- 如果下載失敗，請檢查 cookies 檔案是否存在且有效，並提醒使用者更新。
+- **⚠️ 處理 Cookie 錯誤（[COOKIE_ERROR]）**：若腳本輸出 `[COOKIE_ERROR]` 或因 YouTube 認證失敗而中斷，請**立即終止**所有後續流程。請向使用者提示目前的 Cookie 檔案路徑（如 `.env` 中的 `COOKIES_PATH` 或是預設的 `./cookies.txt`），並詢問使用者要選擇以下哪種方式處理：
+  1. 手動更新目前的 Cookie 檔案（提示檔案路徑）
+  2. 指定另一個新的 Cookie 檔案路徑
+  3. 改為從瀏覽器自動讀取 Cookie（請使用者指定瀏覽器，例如 chrome, edge, firefox）
 - 所有回覆請使用**繁體中文**。

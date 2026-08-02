@@ -60,7 +60,7 @@ def main():
     cmd.append(args.url)
 
     try:
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True, stderr=subprocess.PIPE, text=True)
         
         # Log the downloaded URL to logs/download.log
         log_dir = "logs"
@@ -74,7 +74,11 @@ def main():
         print("\n下載完成！音訊檔案 (.mp3) 與中繼資料 (.info.json) 已保存於當前目錄。")
         print("後續請由 AI Agent 根據這些資訊（如標題、頻道名稱）判斷並建立對應的分類資料夾，然後進行整理。")
     except subprocess.CalledProcessError as e:
-        print(f"下載失敗: {e}", file=sys.stderr)
+        stderr_lower = e.stderr.lower() if e.stderr else ""
+        if any(keyword in stderr_lower for keyword in ["sign in", "bot", "cookie", "member", "private"]):
+            print(f"\n[COOKIE_ERROR] YouTube 拒絕存取。Cookie 可能無效、過期或未提供。\n詳細錯誤: {e.stderr}", file=sys.stderr)
+        else:
+            print(f"下載失敗: {e.stderr if e.stderr else e}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":

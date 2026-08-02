@@ -46,7 +46,11 @@ def main():
             print("無法取得最新的影片資訊。")
             sys.exit(1)
     except subprocess.CalledProcessError as e:
-        print(f"查詢失敗: {e.stderr}", file=sys.stderr)
+        stderr_lower = e.stderr.lower() if e.stderr else ""
+        if any(keyword in stderr_lower for keyword in ["sign in", "bot", "cookie", "member", "private"]):
+            print(f"\n[COOKIE_ERROR] YouTube 拒絕存取。Cookie 可能無效、過期或未提供。\n詳細錯誤: {e.stderr}", file=sys.stderr)
+        else:
+            print(f"查詢失敗: {e.stderr}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
