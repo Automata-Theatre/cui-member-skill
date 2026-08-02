@@ -26,6 +26,7 @@ def main():
     # yt-dlp 命令：取得最新一部影片的標題與URL
     cmd = [
         "yt-dlp",
+        "--flat-playlist",
         "--print", "%(title)s|%(webpage_url)s",
         "--playlist-end", "1",
         args.url
