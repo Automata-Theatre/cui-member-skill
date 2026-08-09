@@ -14,9 +14,10 @@
 > 每個步驟均可透過 `/` 命令獨立執行：
 > | 命令 | 步驟 | 必要輸入 |
 > |------|------|----------|
-> | `/process` | 總管排程 (Orchestrator): 自動掃描雙頻道並執行後續分析與同步 | （無） |
+> | `/process` | 總管排程 (Orchestrator): 自動掃描全頻道並執行後續分析與同步 | （無） |
 > | `/scan_cui` | 獨立掃描「小翠時政財經」並處理新影片 | （無） |
-> | `/scan_meitou` | 獨立掃描「美投侃新闻」並處理新影片 | （無） |
+> | `/scan_meitou_news` | 獨立掃描「美投侃新聞」並處理新影片 | （無） |
+> | `/scan_meitou_stock` | 獨立掃描「美投講美股」（每週日更新）並處理新影片 | （無） |
 > | `/download` | Step 1: 下載音訊 | YouTube URL |
 > | `/organize` | Step 2: 分類整理 | `.mp3` 檔案路徑 |
 > | `/transcribe` | Step 3: 語音轉文字 | `.mp3` 檔案路徑 |
@@ -25,11 +26,11 @@
 > | `/sync` | Step 6: 同步至 Gist | （無） |
 > | `/archive` | Step 7: アーカイブ同期 | （無） |
 
-### 自動掃描 (Auto-Scan) — `/scan_cui` & `/scan_meitou`
-如果你希望 AI Agent 獨立去 YouTube 抓取個別頻道的最新影片並處理，請使用這兩個指令。
+### 自動掃描 (Auto-Scan) — `/scan_cui`, `/scan_meitou_news`, `/scan_meitou_stock`
+如果你希望 AI Agent 獨立去 YouTube 抓取個別頻道的最新影片並處理，請使用這三個指令。
 
 ### 一鍵總管排程 (Orchestrator) — `/process`
-如果你希望 AI Agent 自動掃描「小翠時政財經」與「美投侃新闻」，若有新影片則進行處理，最後產生觀點對比並同步，請直接使用無參數的 `/process`。
+如果你希望 AI Agent 自動掃描「小翠時政財經」、「美投侃新聞」與「美投講美股」，若有新影片則進行處理，最後產生觀點對比並同步，請直接使用無參數的 `/process`。
 > **參閱文件**：`skills/prompts/process.prompt.md`
 
 ### Step 1: 下載音訊 (Download Audio) — `/download`
@@ -38,7 +39,10 @@
 
 ### Step 2: 判斷與分類整理 (Categorization & Organizing) — `/organize`
 **請發揮你的 AI 判斷能力！**
-根據影片「標題」與「頻道資訊」，推斷該影片的 **影片類型 (Video Type)** 與 **日期 (Date)**，建立目錄並移動檔案。若無「小翠時政財經」關鍵字，預設歸類為「美投君」的每日更新。
+根據 `.info.json` 的 `channel` 欄位與標題進行歸類：
+- `美投侃新闻` ➔ `docs/美投君/美投侃新聞/YYYYMMDD/`
+- `美投讲美股` ➔ `docs/美投君/美投講美股/YYYYMMDD/`
+- `小翠時政財經` ➔ 由標題判斷為 `小翠時政財經/會員直播` 或 `小翠時政財經/每日要聞`
 > **參閱文件**：`skills/prompts/organize.prompt.md`
 
 ### Step 3: 語音轉文字 (Transcription) — `/transcribe`
@@ -51,7 +55,7 @@
 > **參閱文件**：`skills/prompts/summarize.prompt.md` 以及 `skills/prompts/summarize.md`
 
 ### Step 5: 觀點對比分析 (Comparative Analysis) — `/compare`
-讀取各頻道最新產生的摘要，進行觀點對比與異同分析，將結果輸出至 `docs/每日新聞綜述/` 目錄。
+讀取各頻道最新產生的摘要、`docs/每日新聞綜述/` 最新報告及第 2 新的摘要進行多層次觀點對比與異同分析，將結果輸出至 `docs/每日新聞綜述/` 目錄。
 > **參閱文件**：`skills/prompts/compare.prompt.md`
 
 ### Step 6: 同步至 Gist (Sync to Gist) — `/sync`

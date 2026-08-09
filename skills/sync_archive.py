@@ -5,10 +5,10 @@
 # ///
 
 """
-archive 配下の Git プロジェクトに docs 内の .md ファイルをコピーし、
-Git コミット＆プッシュを行うスクリプト。
+將 archive 目錄下的 Git 專案與 docs 內的 .md 檔案同步，
+並執行 Git 提交（不自動 Push，以確保安全性）。
 
-使い方:
+使用方法:
   uv run skills/sync_archive.py
   docker exec cui-tools uv run skills/sync_archive.py
 """
@@ -25,7 +25,7 @@ DOCS_DIR = "docs"
 
 
 def find_archive_projects():
-    """archive 配下の Git リポジトリ（.git ディレクトリを持つサブディレクトリ）を検索する"""
+    """搜尋 archive 目錄下包含 .git 資料夾的 Git 存檔專案"""
     if not os.path.isdir(ARCHIVE_DIR):
         return []
 
@@ -39,18 +39,18 @@ def find_archive_projects():
 
 
 def copy_docs_to_project(project_path):
-    """docs 配下の .md ファイルと keywords.md をアーカイブプロジェクトにコピーする"""
+    """將 docs 目錄下的 .md 檔案複製至存檔專案（維持目錄結構）"""
     copied_count = 0
 
-    # 1. docs/**/*.md をコピー（ディレクトリ構造を維持）
+    # 1. 複製 docs/**/*.md（維持原始目錄結構）
     search_pattern = os.path.join(DOCS_DIR, "**", "*.md")
     md_files = glob.glob(search_pattern, recursive=True)
 
     for src_path in md_files:
-        # docs/ からの相対パスを取得
+        # 取得相對於 docs/ 的路徑
         rel_path = os.path.relpath(src_path, DOCS_DIR)
 
-        # GIST_README.md は後で README.md として別途処理するのでスキップ
+        # GIST_README.md 另行作為 README.md 處理，此處跳過
         if os.path.basename(src_path) == "GIST_README.md":
             continue
 
@@ -60,23 +60,23 @@ def copy_docs_to_project(project_path):
         os.makedirs(dest_dir, exist_ok=True)
         shutil.copy2(src_path, dest_path)
         copied_count += 1
-        print(f"  コピー: {src_path} -> {dest_path}")
+        print(f"  複製: {src_path} -> {dest_path}")
 
-    # 2. GIST_README.md を README.md として上書きコピー
+    # 2. 將 GIST_README.md 複製為 README.md（覆蓋寫入）
     gist_readme_path = os.path.join(DOCS_DIR, "GIST_README.md")
     if os.path.exists(gist_readme_path):
         readme_dest = os.path.join(project_path, "README.md")
         shutil.copy2(gist_readme_path, readme_dest)
         copied_count += 1
-        print(f"  コピー: {gist_readme_path} -> {readme_dest} (README.md として上書き)")
+        print(f"  複製: {gist_readme_path} -> {readme_dest}（作為 README.md 覆蓋寫入）")
 
     return copied_count
 
 
 def git_commit_local(project_path):
-    """Git add, commit を実行する（Push は手動で行うよう促す）"""
+    """執行 Git add 與 commit（不執行 Push，請手動推送）"""
     try:
-        # コンテナ環境では ownership の違いで git が拒否するため、safe.directory を設定
+        # 容器環境中可能因目錄擁有者不同而被 git 拒絕，先設定 safe.directory
         abs_project_path = os.path.abspath(project_path)
         subprocess.run(
             ["git", "config", "--global", "--add", "safe.directory", abs_project_path],
@@ -93,7 +93,7 @@ def git_commit_local(project_path):
             text=True,
         )
 
-        # 変更があるかチェック
+        # 確認是否有變更
         result = subprocess.run(
             ["git", "status", "--porcelain"],
             cwd=project_path,
@@ -102,7 +102,7 @@ def git_commit_local(project_path):
         )
 
         if not result.stdout.strip():
-            print(f"  変更なし。コミットをスキップします。")
+            print(f"  無任何變更，略過提交。")
             return False
 
         # git commit
@@ -116,46 +116,46 @@ def git_commit_local(project_path):
             capture_output=True,
             text=True,
         )
-        print(f"  ✅ コミット完了: {commit_msg}")
-        print(f"  ⚠️ セキュリティ保護のため、コンテナ内からの push は行いません。")
-        print(f"  手動で `git push` を実行してください: {project_path}")
+        print(f"  ✅ 提交完成: {commit_msg}")
+        print(f"  ⚠️  為確保安全性，不在容器內自動執行 Push。")
+        print(f"  請手動執行 `git push`：{project_path}")
         return True
 
     except subprocess.CalledProcessError as e:
-        print(f"  ❌ Git 操作エラー: {e}")
+        print(f"  ❌ Git 操作錯誤: {e}")
         if e.stderr:
             print(f"     {e.stderr.strip()}")
         return False
 
 
 def main():
-    print("🔍 archive 配下のアーカイブプロジェクトを検索中...")
+    print("🔍 正在搜尋 archive 目錄下的存檔專案...")
 
     projects = find_archive_projects()
 
     if not projects:
-        print("archive 配下にアーカイブ用プロジェクトが見つかりません。何もしません。")
+        print("archive 目錄下未找到任何存檔專案，略過同步。")
         sys.exit(0)
 
-    print(f"📦 {len(projects)} 個のアーカイブプロジェクトが見つかりました。\n")
+    print(f"📦 找到 {len(projects)} 個存檔專案。\n")
 
     for project_path in projects:
         project_name = os.path.basename(project_path)
         print(f"--- [{project_name}] ---")
 
-        # docs の .md ファイルをコピー
+        # 複製 docs 內的 .md 檔案
         copied = copy_docs_to_project(project_path)
         if copied == 0:
-            print(f"  コピー対象のファイルがありません。スキップします。")
+            print(f"  沒有可複製的檔案，略過此專案。")
             continue
 
-        print(f"  📄 {copied} 個のファイルをコピーしました。")
+        print(f"  📄 已複製 {copied} 個檔案。")
 
-        # Git コミット
+        # 執行 Git 提交
         git_commit_local(project_path)
         print()
 
-    print("🎉 アーカイブ同期完了！")
+    print("🎉 存檔同步完成！")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # CUI Member Skill
 
-本專案提供了一套自動化工具與工作流（Skills），旨在將 **[小翠時政財經](https://www.youtube.com/@cui_news)** （包含「會員直播」與「每日要聞」）以及 **[美投侃新闻](https://www.youtube.com/@MeiTouNews)** 的 YouTube 影片音訊下載、轉譯為文字，並透過 AI Agent（如 Claude、GitHub Copilot、Codex 或 Antigravity）進行各自的重點摘要與投資分析，最後將兩者的觀點進行異同對比與歸檔。
+本專案提供了一套自動化工具與工作流（Skills），旨在將 **[小翠時政財經](https://www.youtube.com/@cui_news)**（包含「會員直播」與「每日要聞」）、**[美投侃新聞](https://www.youtube.com/@MeiTouNews)** 以及 **[美投講美股](https://www.youtube.com/@MeiTouJun)**（每週日更新）的 YouTube 影片音訊下載、轉譯為文字，並透過 AI Agent（如 Claude、GitHub Copilot、Codex 或 Antigravity）進行各自的重點摘要與投資分析，最後將各頻道的觀點進行異同對比與歸檔。
 
 ## 專案設計理念
 
@@ -17,13 +17,14 @@
 | 指令 | 功能 | 必要輸入 |
 |------|------|----------|
 | `/scan_cui` | 自動檢查小翠最新直播，若未處理則觸發下載與分析 | （無） |
-| `/scan_meitou` | 自動檢查美投侃新闻最新影片，若未處理則觸發下載與分析 | （無） |
-| `/process` | **總管排程 (Orchestrator)**：自動掃描雙頻道，若有新影片則執行分析，並進行觀點對比與同步 | （無） |
+| `/scan_meitou_news` | 自動檢查美投侃新聞最新影片，若未處理則觸發下載與分析 | （無） |
+| `/scan_meitou_stock` | 自動檢查美投講美股最新影片（每週日更新），若未處理則觸發下載與分析 | （無） |
+| `/process` | **總管排程 (Orchestrator)**：自動掃描三頻道，若有新影片則執行分析，並進行觀點對比與同步 | （無） |
 | `/download <YouTube URL>` | Step 1: 下載音訊與元數據 | YouTube URL |
-| `/organize <mp3路徑>` | Step 2: AI 判斷類型與日期，建立目錄並移動檔案 | `.mp3` 檔案路徑 |
+| `/organize <mp3路徑>` | Step 2: AI 依 `channel` 欄位判斷類型，建立目錄並移動檔案 | `.mp3` 檔案路徑 |
 | `/transcribe <mp3路徑>` | Step 3: 語音轉文字，產生 `.txt` 文字稿 | `.mp3` 檔案路徑 |
 | `/summarize <txt路徑>` | Step 4: 讀取文字稿，輸出繁體中文投資分析報告 `summary.md` | `.txt` 檔案路徑 |
-| `/compare` | Step 5: 讀取各頻道最新摘要，產生觀點對比與異同分析 (`每日新聞綜述`) | （無） |
+| `/compare` | Step 5: 依最新內容類型動態選擇主比較對象，產生觀點對比與異同分析（`每日新聞綜述`） | （無） |
 | `/sync` | Step 6: 將各分類最新的筆記自動同步至 GitHub Gist（維持單一最新檔案，清理舊檔） | （無） |
 | `/archive` | Step 7: 掃描 `./archive` 配下的 Git 專案並同步文件（安全起見需手動 Push） | （無） |
 
@@ -36,28 +37,39 @@
 ```mermaid
 graph TD
     %% 節點定義
-    Orchestrator[總管排程 /process\n自動掃描雙頻道]
-    
-    subgraph 影片處理管線
-        Download(Step 1: download_audio.py\n下載音訊與元數據)
-        Organize(Step 2: organize\n分析中繼資料並歸檔至對應頻道/日期)
-        Transcribe(Step 3: transcribe.py\nWhisper-MLX 語音轉譯)
-        Summarize(Step 4: AI 摘要分析\n套用 keywords.md 糾錯與結構化輸出)
+    Orchestrator["總管排程 /process\n自動掃描三頻道"]
+
+    subgraph 頻道掃描
+        ScanCui["/scan_cui\n小翠時政財經"]
+        ScanNews["/scan_meitou_news\n美投侃新聞"]
+        ScanStock["/scan_meitou_stock\n美投講美股（每週日）"]
     end
-    
+
+    subgraph 影片處理管線
+        Download("Step 1: download_audio.py\n下載音訊與元數據")
+        Organize("Step 2: organize\n依 channel 欄位歸檔至對應頻道/日期")
+        Transcribe("Step 3: transcribe.py\nWhisper-MLX 語音轉譯")
+        Summarize("Step 4: AI 摘要分析\n套用 keywords.md 糾錯與結構化輸出")
+    end
+
     subgraph 綜述與發佈
-        Compare(Step 5: 觀點對比\n產生「每日新聞綜述」)
-        SyncGist(Step 6: sync_gist.py\n同步至 GitHub Gist)
-        SyncArchive(Step 7: sync_archive.py\n提交至本地 Archive 專案)
+        Compare("Step 5: 觀點對比\n依最新類型切換主比較對象\n產生每日新聞綜述")
+        SyncGist("Step 6: sync_gist.py\n同步至 GitHub Gist")
+        SyncArchive("Step 7: sync_archive.py\n提交至本地 Archive 專案")
     end
 
     %% 流程線
-    Orchestrator -->|掃描到新影片| Download
+    Orchestrator --> ScanCui
+    Orchestrator --> ScanNews
+    Orchestrator --> ScanStock
+    ScanCui -->|掃描到新影片| Download
+    ScanNews -->|掃描到新影片| Download
+    ScanStock -->|掃描到新影片| Download
     Download --> Organize
     Organize --> Transcribe
     Transcribe --> Summarize
-    
-    Summarize -->|完成所有頻道處理| Compare
+
+    Summarize -->|"完成所有頻道處理"| Compare
     Compare --> SyncGist
     SyncGist --> SyncArchive
 ```
@@ -248,7 +260,7 @@ uv run skills/transcribe.py "./docs/小翠時政財經/會員直播/20260717/aud
 依照 `skills/prompts/summarize.md` 的提示詞，讓 AI Agent 讀取 `.txt` 並生成 `summary.md` 報告。
 
 **Step 5: 觀點對比分析 (每日新聞綜述)**
-根據 `skills/prompts/compare.prompt.md` 的指示，讓 AI Agent 比較最新的「小翠時政財經」與「美投侃新闻」摘要，產生對比分析報告。
+根據 `skills/prompts/compare.prompt.md` 的指示，AI Agent 會先判斷最新內容的類型（每日要聞/會員直播/美投侃新聞/美投講美股），再動態選擇主比較對象，產生對比分析報告。
 
 **Step 6: 同步至 Gist (選擇性)**
 將各分類的最新分析報告與每日新聞綜述上傳至 Gist，自動覆蓋並清理舊檔以維持頁面整潔。
@@ -288,12 +300,15 @@ cui-member-skill/
 │   ├── sync_archive.py        # 本地 Git 專案同步（歸檔）腳本
 │   └── prompts/               # 各階段專屬的 Agent 提示詞與操作說明
 │       ├── process.prompt.md
+│       ├── scan_cui.prompt.md
+│       ├── scan_meitou_news.prompt.md
+│       ├── scan_meitou_stock.prompt.md
 │       ├── download.prompt.md
 │       ├── organize.prompt.md
 │       ├── transcribe.prompt.md
 │       ├── summarize.prompt.md
 │       ├── summarize.md       # 給 LLM 的分析提示詞範本
-│       └── compare.prompt.md  # 觀點對比分析的 Agent 提示詞
+│       └── compare.prompt.md  # 觀點對比分析的 Agent 提示詞（模式 A/B 動態切換）
 ├── docs/                      # 輸出目錄（按影片類型/日期分類存放）
 └── ./
     └── cookies.txt            # Cookies 檔案（已在 Git 中忽略）
