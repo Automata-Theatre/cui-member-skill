@@ -55,7 +55,7 @@
 > **參閱文件**：`skills/prompts/summarize.prompt.md` 以及 `skills/prompts/summarize.md`
 
 ### Step 5: 觀點對比分析 (Comparative Analysis) — `/compare`
-讀取各頻道最新產生的摘要、`docs/每日新聞綜述/` 最新報告及第 2 新的摘要進行多層次觀點對比與異同分析，將結果輸出至 `docs/每日新聞綜述/` 目錄。
+讀取各頻道最新產生的摘要，並根據最新內容的類型動態切換分析模式（模式 A、B、C），自動選擇主比較對象進行多層次觀點對比與異同分析，將結果輸出至 `docs/每日新聞綜述/` 目錄。
 > **參閱文件**：`skills/prompts/compare.prompt.md`
 
 ### Step 6: 同步至 Gist (Sync to Gist) — `/sync`
