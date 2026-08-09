@@ -1,0 +1,12 @@
+{
+  "chat.tools.terminal.autoApprove": {
+    "/^uv run skills/get_latest_video\\.py \"https://www\\.youtube\\.com/@cui_news/streams\"$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^python skills/get_latest_video\\.py \"https://www\\.youtube\\.com/@cui_news/streams\" 2>&1 \\| head -5$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
+  }
+}
