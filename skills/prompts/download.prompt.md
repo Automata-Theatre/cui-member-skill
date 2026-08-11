@@ -13,9 +13,15 @@ uv run skills/download_audio.py "${input:url}"
 ```
 
 ### 🪟 Windows 版 (完全容器化)
-Windows 採用全容器化運行，需先確保 `cui-tools` 容器已啟動 (`docker compose up -d` 或 `podman compose up -d`)。
-請透過 `docker exec` (或 `podman exec`) 執行指令：
+Windows 採用全容器化運行，需先確保 `cui-tools` 容器已啟動。
+請**先**讀取 `.env` 中的 `CONTAINER_RUNTIME` 值（若未設定則預設為 `docker`），再執行對應指令：
 ```bash
+# 若 CONTAINER_RUNTIME=podman
+podman compose up -d
+podman exec cui-tools uv run skills/download_audio.py "${input:url}"
+
+# 若 CONTAINER_RUNTIME=docker（或未設定）
+docker compose up -d
 docker exec cui-tools uv run skills/download_audio.py "${input:url}"
 ```
 

@@ -9,10 +9,13 @@ description: '自動掃描美投講美股最新影片（每週日更新），判
 
 ### 執行步驟
 
+#### Step 0: 確認容器工具 (Windows 限定)
+若在 Windows 環境執行，請**先**讀取 `.env` 中的 `CONTAINER_RUNTIME` 值（若未設定則預設為 `docker`）。後續所有 Windows 指令中的 `<RUNTIME>` 均以此值代入（例如 `podman` 或 `docker`）。
+
 #### Step 1: 取得最新影片資訊
-1. 根據作業系統執行對應指令，取得「美投講美股」最新影片的標題與 URL：
+1. 根據作業系統執行對応指令，取得「美投講美股」最新影片的標題與 URL：
    - **Mac**: `uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouJun/videos"`
-   - **Windows**: `docker exec cui-tools uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouJun/videos"`
+   - **Windows**: `<RUNTIME> exec cui-tools uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouJun/videos"`（`<RUNTIME>` 來自 Step 0）
 2. 腳本會返回 `<標題>|<URL>` 的格式。請解析出該影片的 **標題** 與 **URL**。
 
 #### Step 2: 檢查是否已下載與處理
