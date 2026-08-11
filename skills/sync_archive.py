@@ -128,6 +128,29 @@ def git_commit_local(project_path):
         return False
 
 
+def copy_logs_to_project(project_path):
+    """將 logs/download.log 的最新 5 筆紀錄複製至存檔專案"""
+    log_src = os.path.join("logs", "download.log")
+    if not os.path.exists(log_src):
+        return 0
+
+    with open(log_src, "r", encoding="utf-8") as f:
+        lines = [line for line in f if line.strip()]
+
+    latest_5 = lines[-5:] if len(lines) >= 5 else lines
+    if not latest_5:
+        return 0
+
+    log_dest = os.path.join(project_path, "logs", "download.log")
+    os.makedirs(os.path.dirname(log_dest), exist_ok=True)
+
+    with open(log_dest, "w", encoding="utf-8") as f:
+        f.writelines(latest_5)
+
+    print(f"  複製: {log_src} (最新 5 筆) -> {log_dest}（覆蓋寫入）")
+    return 1
+
+
 def main():
     print("🔍 正在搜尋 archive 目錄下的存檔專案...")
 
@@ -145,11 +168,15 @@ def main():
 
         # 複製 docs 內的 .md 檔案
         copied = copy_docs_to_project(project_path)
+        
+        # 複製 logs/download.log 最新 5 筆
+        copied += copy_logs_to_project(project_path)
+
         if copied == 0:
             print(f"  沒有可複製的檔案，略過此專案。")
             continue
 
-        print(f"  📄 已複製 {copied} 個檔案。")
+        print(f"  📄 已處理 {copied} 個檔案。")
 
         # 執行 Git 提交
         git_commit_local(project_path)
