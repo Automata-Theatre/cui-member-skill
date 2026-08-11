@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     ffmpeg \
     git \
+    nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv
@@ -14,8 +15,8 @@ ENV PATH="/root/.local/bin:${PATH}"
 # Create workspace
 WORKDIR /workspace
 
-# Install yt-dlp via uv
-RUN uv tool install yt-dlp
+# Install and upgrade yt-dlp with JavaScript challenge solver
+RUN pip install --upgrade yt-dlp pyarmor
 ENV PATH="/root/.local/bin:${PATH}"
 
 ENTRYPOINT ["tail", "-f", "/dev/null"]

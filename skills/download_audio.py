@@ -41,6 +41,7 @@ def main():
     # -x, --audio-format mp3: 提取音訊並轉為 mp3
     # --write-info-json: 將影片標題、頻道等中繼資料寫入 JSON，方便 AI Agent 後續分析
     # -o: 指定輸出檔名格式
+    # --js-runtimes node: 使用 Node.js 作為 JavaScript 運行時（用於解決 YouTube n challenge）
     cmd = [
         "yt-dlp",
         "--windows-filenames",
@@ -49,7 +50,9 @@ def main():
         "mp3",
         "--write-info-json",
         "-o",
-        "%(id)s.%(ext)s"
+        "%(id)s.%(ext)s",
+        "--js-runtimes",
+        "node"
     ]
     
     if cookies_file and os.path.exists(cookies_file):
