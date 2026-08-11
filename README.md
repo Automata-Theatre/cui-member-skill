@@ -138,7 +138,7 @@ cp .env.example .env
 | `WHISPER_MODE` | 轉譯模式（`local` / `openai` / `azure`） | `local` |
 | `WHISPER_MODEL` | 本地端模式時的模型名稱 | `mlx-community/whisper-medium-mlx-8bit` |
 | `COOKIES_PATH` | Cookies 檔案的存放路徑 | `./cookies.txt` |
-| `COOKIES_BROWSER`| 預設從指定瀏覽器自動讀取 Cookies（如 `firefox`, `chrome`）| `chrome` |
+| `COOKIES_BROWSER`| 從指定瀏覽器自動讀取 Cookies（**Mac 專用**，如 `firefox`, `chrome`）| （未設定） |
 | `OPENAI_API_KEY` | 使用 OpenAI API 模式時為必填 | — |
 | `GITHUB_TOKEN` | 同步 Gist 專用（需包含 `gist` 權限） | — |
 | `GIST_ID` | 同步 Gist 專用（目標 Gist 的 ID） | — |
@@ -173,8 +173,9 @@ Windows 版本現在採用**完全容器化**架構，不需要在主機上安�
 
 ### 1. 安裝必要工具
 
-- 請安裝 [Docker Desktop](https://www.docker.com/products/docker-desktop/)（推薦包含 NVIDIA Container Toolkit 以支援 GPU 加速）。
-- （或者）如果不想使用 Docker，也可以安裝 Podman。系統會自動偵測並切換。
+- 請安裝 [Docker Desktop](https://www.docker.com/products/docker-desktop/) 或 [Podman Desktop](https://podman-desktop.io/)。
+  - 有 NVIDIA GPU 的環境請另行安裝 NVIDIA Container Toolkit 以支援 CUDA 加速。
+- 所有 Python 工具皆在容器內執行，**主機無需安裝 Python、uv、yt-dlp 或 ffmpeg**。
 
 ### 2. 準備 Cookies 檔案（下載會員限定影片）
 
@@ -187,46 +188,47 @@ Windows 版本現在採用**完全容器化**架構，不需要在主機上安�
 請將匯出的檔案命名為 `cookies.txt`，並放置於專案根目錄下。
 > ⚠️ **注意換行字元**：請確保換行字元為 **CRLF (`\r\n`)** 或 LF，格式錯誤可能會發生 `HTTP Error 400: Bad Request`。
 
-### 3. 啟動容器環境 (Docker / Podman)
-
-在專案目錄下執行：
-
-```bash
-# 預設：啟動支援 NVIDIA GPU 的容器
-docker compose up -d
-
-# 若您的電腦沒有 NVIDIA GPU，請改用 CPU 版本啟動：
-docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d
-```
-
-這將會啟動包含 yt-dlp, ffmpeg, uv 等所有必備工具的 `cui-tools` 容器。
-
-### 4. 在容器內執行腳本
-
-容器啟動後，所有的指令皆透過 `docker exec` (或 `podman exec`) 在 `cui-tools` 容器內執行：
-
-```bash
-docker exec cui-tools uv run skills/transcribe.py docs/your-dir/audio.mp3
-```
-
-### 5. 設定環境變數
+### 3. 設定環境變數並啟動容器
 
 ```bash
 copy .env.example .env
 ```
 
+在 `.env` 中設定主要參數後，於 PowerShell 中執行以下指令。`load-env.ps1` 會將 `.env` 載入為環境變數（相當於 bash 的 `set -a; . .env; set +a`），並依 `USE_CUDA` 自動選擇正確的 Compose 檔與容器名稱：
+
+```powershell
+# .env 載入與環境初始化（每次開新 PowerShell 視窗時執行）
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1
+
+# 容器啟動（初次或設定變更後需加 --build）
+& $env:CONTAINER_RUNTIME compose -f $env:CUI_COMPOSE_FILE up -d
+```
+
+`USE_CUDA=false`（預設）→ 使用 `Dockerfile.cpu` + `docker-compose.cpu.yml`（容器名：`cui-tools-cpu`）  
+`USE_CUDA=true` → 使用 `Dockerfile`（CUDA）+ `docker-compose.cuda.yml`（容器名：`cui-tools-cuda`）
+
 可以在 `.env` 中設定的主要參數：
 
-| 變數名稱 | 說明 |
-|--------|------|
-| `WHISPER_MODE` | `local`（Docker GPU/CPU）/ `openai` / `azure` | `local` |
-| `CONTAINER_RUNTIME`| 指定使用的容器工具，預設留空系統自動偵測 | `docker` |
-| `COOKIES_PATH` | Cookies 檔案的存放路徑 | `./cookies.txt` |
-| `OPENAI_API_KEY` | 使用 OpenAI API 模式時為必填 | — |
-| `GITHUB_TOKEN` | 同步 Gist 專用（需包含 `gist` 權限） | — |
-| `GIST_ID` | 同步 Gist 專用（目標 Gist 的 ID） | — |
+| 變數名稱 | 說明 | 預設值 |
+|--------|------|------|
+| `WHISPER_MODE` | 轉譯模式（`local` / `openai` / `azure`） | `local` |
+| `CONTAINER_RUNTIME` | 容器工具（`docker` または `podman`） | `docker` |
+| `USE_CUDA` | NVIDIA GPU 加速（`true` / `false`） | `false` |
+| `COOKIES_PATH` | 會員限定影片用 Cookies 檔案路徑 | `./cookies.txt` |
+| `OPENAI_API_KEY` | OpenAI API モード時必填 | — |
+| `AZURE_OPENAI_API_KEY` | Azure OpenAI API モード時必填 | — |
+| `GITHUB_TOKEN` | 同步 Gist 專用（需 `gist` 權限） | — |
+| `GIST_ID` | 同步 Gist 專用 | — |
 
-> ⚠️ **注意 (API 限制)**：當 `WHISPER_MODE` 設定為 `azure`（或 `openai`）時，受限於官方 API 規格，**音訊檔案大小不得超過 25MB**。對於超過此大小的影片（例如長篇直播），請務必切換為 `local` 模式進行轉譯。
+> ⚠️ **注意 (API 限制)**：`WHISPER_MODE=azure`（或 `openai`）時，音訊檔案大小不得超過 25MB。超過此大小的影片請切換為 `local` 模式。
+
+### 4. 在容器內執行腳本
+
+`load-env.ps1` 實行後、以下の形式で各スクリプトを実行できます：
+
+```powershell
+& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/transcribe.py docs/your-dir/audio.mp3
+```
 
 ---
 
@@ -236,14 +238,12 @@ copy .env.example .env
 
 ### 手動執行步驟（供參考）
 
-> **⚠️ 注意**：以下指令以 Mac 版 (`uv run`) 為例。若您使用 Windows 版，請在所有 `uv run` 指令前方加上 `docker exec cui-tools` (或 `podman exec cui-tools`)。
+> **⚠️ 注意**：以下指令以 Mac 版 (`uv run`) 為例。Windows 版請先執行 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1`、その後すべての `uv run` コマンドを `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run` に置き換えてください。
 
 **Step 1: 下載音訊**
 ```bash
 uv run skills/download_audio.py "https://www.youtube.com/watch?v=YOUR_VIDEO_ID"
-# 系統將自動讀取 .env 中的 COOKIES_BROWSER 設定（預設為 chrome）
-# 若需要，您也可以透過參數強制指定本次要使用的瀏覽器：
-uv run skills/download_audio.py --browser firefox "https://www.youtube.com/watch?v=YOUR_VIDEO_ID"
+# 會員限定影片需先準備 cookies.txt（Mac 可設定 COOKIES_BROWSER；Windows 容器環境請使用 COOKIES_PATH）
 ```
 
 **Step 2: 建立分類目錄並移動檔案**（交由 AI Agent 自動判斷）
@@ -290,9 +290,12 @@ cui-member-skill/
 ├── uv.lock                    # 依賴版本鎖定檔
 ├── .env.example               # 環境變數設定範本
 ├── .gitignore
-├── Dockerfile                 # Windows 容器化影像定義檔
-├── docker-compose.yml         # Windows NVIDIA GPU 專用的 Docker 設定檔
-├── docker-compose.cpu.yml     # Windows CPU 專用的 Docker 設定檔
+├── Dockerfile                 # Windows CUDA 版容器映像定義檔
+├── Dockerfile.cpu             # Windows CPU 版容器映像定義檔
+├── docker-compose.cuda.yml    # Windows NVIDIA GPU (CUDA) 專用
+├── docker-compose.cpu.yml     # Windows CPU 專用（完整獨立設定）
+├── scripts/
+│   └── load-env.ps1           # .env → 環境變數展開 + CUDA/CPU コンテナ自動選択（PowerShell）
 ├── skills/                    # 自動化技能腳本
 │   ├── download_audio.py      # 音訊與中繼數據的下載
 │   ├── transcribe.py          # 語音轉文字（支援 Local/OpenAI/Azure，自動判別 CPU/GPU）
@@ -308,10 +311,9 @@ cui-member-skill/
 │       ├── transcribe.prompt.md
 │       ├── summarize.prompt.md
 │       ├── summarize.md       # 給 LLM 的分析提示詞範本
-│       └── compare.prompt.md  # 觀點對比分析的 Agent 提示詞（模式 A/B 動態切換）
+│       └── compare.prompt.md  # 觀點對比分析的 Agent 提示詞（模式 A/B/C 動態切換）
 ├── docs/                      # 輸出目錄（按影片類型/日期分類存放）
-└── ./
-    └── cookies.txt            # Cookies 檔案（已在 Git 中忽略）
+└── cookies.txt                # Cookies 檔案（已在 Git 中忽略）
 ```
 
 ## License

@@ -62,14 +62,14 @@
 將生成的重點筆記與每日新聞綜述自動同步至 GitHub Gist。
 根據作業系統執行對應指令：
 - **Mac**: `uv run skills/sync_gist.py`
-- **Windows**: `<CONTAINER_RUNTIME> exec cui-tools uv run skills/sync_gist.py`（`<CONTAINER_RUNTIME>` 請從 `.env` 讀取，預設為 `docker`）
+- **Windows**: 先執行 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1`，再執行 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/sync_gist.py`
 > 執行前請確保 `.env` 中已設定 `GITHUB_TOKEN` 與 `GIST_ID`。
 
 ### Step 7: アーカイブ同期 (Sync to Archive) — `/archive`
 `./archive` 配下の任意の名前のアーカイブ用リポジトリが存在する場合、`docs` 内の `.md` ファイルをコピーし、Git コミットを行う。
 根據作業系統執行對應指令：
 - **Mac**: `uv run skills/sync_archive.py`
-- **Windows**: `<CONTAINER_RUNTIME> exec cui-tools uv run skills/sync_archive.py`（`<CONTAINER_RUNTIME>` 請從 `.env` 讀取，預設為 `docker`）
+- **Windows**: 先執行 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1`，再執行 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/sync_archive.py`
 > `./archive` 配下にプロジェクトが存在しない場合は何もしない。
 
 ---

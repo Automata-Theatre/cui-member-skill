@@ -21,7 +21,7 @@ def main():
 
     browser = args.browser
     if browser is None:
-        browser = os.environ.get("COOKIES_BROWSER", "chrome")
+        browser = os.environ.get("COOKIES_BROWSER", "")
     if browser and browser.lower() in ("none", "false", ""):
         browser = None
 

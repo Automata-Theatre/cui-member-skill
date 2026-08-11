@@ -13,10 +13,12 @@ uv run skills/transcribe.py "${input:audioFilePath}"
 ```
 
 ### 🪟 Windows 版 (完全容器化)
-Windows 採用全容器化運行，請**先**讀取 `.env` 中的 `CONTAINER_RUNTIME` 值（若未設定則預設為 `docker`），再執行對應指令（路徑需為相對於工作目錄，如 `docs/會員直播/20260717/xxx.mp3`）：
-```bash
-# 以實際的 CONTAINER_RUNTIME 值取代 <RUNTIME>
-<RUNTIME> exec cui-tools uv run skills/transcribe.py "${input:audioFilePath}"
+Windows 將 `.env` 載入為環境變數後，再執行轉譯（路徑需為相對於工作目錄，如 `docs/會員直播/20260717/xxx.mp3`）：
+```powershell
+# 尚未初始化時（同一次 Shell 已執行過 download 則略過）
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1
+# 轉譯
+& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/transcribe.py "${input:audioFilePath}"
 ```
 
 ### 執行後確認事項

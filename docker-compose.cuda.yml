@@ -3,10 +3,9 @@ version: '3.8'
 services:
   cui-tools:
     build: .
-    container_name: cui-tools
+    container_name: cui-tools-cuda
     volumes:
       - .:/workspace
-      - ./cookies.txt:/workspace/cookies.txt
     working_dir: /workspace
     deploy:
       resources:

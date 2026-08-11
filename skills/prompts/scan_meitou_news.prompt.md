@@ -9,13 +9,17 @@ description: '自動掃描美投侃新聞最新影片，判斷是否已下載，
 
 ### 執行步驟
 
-#### Step 0: 確認容器工具 (Windows 限定)
-若在 Windows 環境執行，請**先**讀取 `.env` 中的 `CONTAINER_RUNTIME` 值（若未設定則預設為 `docker`）。後續所有 Windows 指令中的 `<RUNTIME>` 均以此值代入（例如 `podman` 或 `docker`）。
+#### Step 0: 初始化 Windows 環境（Windows 限定）
+若在 Windows 環境執行，請**先**以 ドットソース 執行下列指令，將 `.env` 載入為環境變數（相當於 `set -a; . .env; set +a`），並依 `USE_CUDA` 自動選擇正確的容器：
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1
+```
+後續所有 Windows 指令均使用 `$env:CONTAINER_RUNTIME` 與 `$env:CUI_CONTAINER`，無需手動讀取 `.env`。
 
 #### Step 1: 取得最新影片資訊
 1. 根據作業系統執行對應指令，取得「美投侃新聞」最新影片的標題與 URL：
    - **Mac**: `uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos"`
-   - **Windows**: `<RUNTIME> exec cui-tools uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos"`（`<RUNTIME>` 來自 Step 0）
+   - **Windows**: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos"`
 2. 腳本會返回 `<標題>|<URL>` 的格式。請解析出該影片的 **標題** 與 **URL**。
 
 #### Step 2: 檢查是否已下載與處理
