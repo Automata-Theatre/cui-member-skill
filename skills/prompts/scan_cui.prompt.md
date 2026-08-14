@@ -23,11 +23,12 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.p
 2. 腳本會返回 `<標題>|<URL>` 的格式。請解析出該影片的 **標題** 與 **URL**。
 
 #### Step 2: 檢查是否已下載與處理
-1. 從剛才取得的 **URL** 中提取出 YouTube 影片 ID（例如 `https://www.youtube.com/live/G0bWOrRYyDA` 與 `https://www.youtube.com/watch?v=G0bWOrRYyDA` 的影片 ID 皆為 `G0bWOrRYyDA`）。
-2. 使用命令 `tail -n 20 logs/download.log` 讀取最近的下載紀錄，檢查該 **影片 ID** 是否已存在於紀錄中。
-3. 判斷邏輯：
-   - 若該影片 ID 已存在於 `logs/download.log` 之中，代表已經處理過。請向使用者回報「小翠時政財經：最新影片已處理過，無須重新下載」，並 **結束此任務**。
-   - 若不存在，代表這是新的未處理影片，請進入 Step 3。
+1. 使用以下命令檢查剛才取得的 **URL** 是否已存在於下載紀錄中（腳本會自動解析影片 ID 並搜尋 `logs/download.log`）：
+   - **Mac**: `uv run skills/log_download.py check "<URL>"`
+   - **Windows**: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/log_download.py check "<URL>"`
+2. 判斷邏輯：
+   - 若輸出 `[FOUND]`（結束代碼 0），代表已經處理過。請向使用者回報「小翠時政財經：最新影片已處理過，無須重新下載」，並 **結束此任務**。
+   - 若輸出 `[NOT_FOUND]`（結束代碼 1），代表這是新的未處理影片，請進入 Step 3。
 
 #### Step 3: 執行處理流程 (處理新影片)
 既然這是一部新影片，請你自動針對剛取得的 **URL** 依序執行以下操作：

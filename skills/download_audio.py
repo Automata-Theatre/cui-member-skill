@@ -65,14 +65,9 @@ def main():
     try:
         subprocess.run(cmd, check=True, stderr=subprocess.PIPE, text=True)
         
-        # Log the downloaded URL to logs/download.log
-        log_dir = "logs"
-        if not os.path.exists(log_dir):
-            os.makedirs(log_dir)
-        import datetime
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        with open(os.path.join(log_dir, "download.log"), "a", encoding="utf-8") as f:
-            f.write(f"[{now}] Downloaded: {args.url}\n")
+        # 透過通用下載紀錄工具記錄已下載的 URL
+        from log_download import add_log
+        add_log(args.url)
             
         print("\n下載完成！音訊檔案 (.mp3) 與中繼資料 (.info.json) 已保存於當前目錄。")
         print("後續請由 AI Agent 根據這些資訊（如標題、頻道名稱）判斷並建立對應的分類資料夾，然後進行整理。")
