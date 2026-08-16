@@ -23,7 +23,7 @@
 > | `/transcribe` | Step 3: 語音轉文字 | `.mp3` 檔案路徑 |
 > | `/summarize` | Step 4: 摘要分析 | `.txt` 檔案路徑 |
 > | `/compare` | Step 5: 觀點對比 (每日新聞綜述) | （無） |
-> | `/sync` | Step 6: 同步至 Gist | （無） |
+> | `/sync_gist` | Step 6: 同步至 Gist | （無） |
 > | `/archive` | Step 7: アーカイブ同期 | （無） |
 
 ### 自動掃描 (Auto-Scan) — `/scan_cui`, `/scan_meitou_news`, `/scan_meitou_stock`
@@ -58,7 +58,7 @@
 讀取各頻道最新產生的摘要，並根據最新內容的類型動態切換分析模式（模式 A、B、C），自動選擇主比較對象進行多層次觀點對比與異同分析，將結果輸出至 `docs/每日新聞綜述/` 目錄。
 > **參閱文件**：`skills/prompts/compare.prompt.md`
 
-### Step 6: 同步至 Gist (Sync to Gist) — `/sync`
+### Step 6: 同步至 Gist (Sync to Gist) — `/sync_gist`
 將生成的重點筆記與每日新聞綜述自動同步至 GitHub Gist。
 根據作業系統執行對應指令：
 - **Mac**: `uv run skills/sync_gist.py`

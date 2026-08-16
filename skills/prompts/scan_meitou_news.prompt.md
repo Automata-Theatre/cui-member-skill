@@ -35,7 +35,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.p
 2. **分類**: 執行 `/organize` 將檔案移至 `docs/美投君/美投侃新聞/YYYYMMDD/`。
 3. **轉譯**: 執行 `/transcribe` 產生文字稿。
 4. **摘要**: 執行 `/summarize` 產生投資分析報告 (`summary.md`)。
-5. **結束任務**: 若你是單獨執行 `/scan_meitou_news`，請到此（完成 `/summarize`）為止，向使用者回報「美投侃新聞：新影片已下載並完成摘要」，**不要**接著執行 `/scan_cui`、`/scan_meitou_stock`、`/compare`、`/sync` 或 `/archive`。
+5. **結束任務**: 若你是單獨執行 `/scan_meitou_news`，請到此（完成 `/summarize`）為止，向使用者回報「美投侃新聞：新影片已下載並完成摘要」，**不要**接著執行 `/scan_cui`、`/scan_meitou_stock`、`/compare`、`/sync_gist` 或 `/archive`。
 
 ### 注意
 - **⚠️ 處理 Cookie 錯誤（[COOKIE_ERROR]）**：若執行 `get_latest_video.py` 或 `download_audio.py` 時遇到 `[COOKIE_ERROR]` 或因 YouTube 認證失敗而中斷，請**立即終止**所有後續流程。請向使用者提示目前的 Cookie 檔案路徑，並詢問處理解決方案。
