@@ -32,11 +32,11 @@
 
 ### 一鍵總管排程 (Orchestrator) — `/process`
 如果你希望 AI Agent 自動掃描「小翠時政財經」、「美投侃新聞」與「美投講美股」，若有新影片則進行處理，最後產生觀點對比並同步，請直接使用無參數的 `/process`。
-> **參閱文件**：`skills/prompts/process.prompt.md`
+> **參閱文件**：`.agent/workflows/process.prompt.md`
 
 ### Step 1: 下載音訊 (Download Audio) — `/download`
 利用 `yt-dlp` 下載影片音訊。
-> **參閱文件**：`skills/prompts/download.prompt.md`
+> **參閱文件**：`.agent/workflows/download.prompt.md`
 
 ### Step 2: 判斷與分類整理 (Categorization & Organizing) — `/organize`
 **請發揮你的 AI 判斷能力！**
@@ -44,20 +44,20 @@
 - `美投侃新闻` ➔ `docs/美投君/美投侃新聞/YYYYMMDD/`
 - `美投讲美股` ➔ `docs/美投君/美投講美股/YYYYMMDD/`
 - `小翠時政財經` ➔ 由標題判斷為 `小翠時政財經/會員直播` 或 `小翠時政財經/每日要聞`
-> **參閱文件**：`skills/prompts/organize.prompt.md`
+> **參閱文件**：`.agent/workflows/organize.prompt.md`
 
 ### Step 3: 語音轉文字 (Transcription) — `/transcribe`
 利用 `skills/transcribe.py` 將整理好的音訊轉為文字。
-> **參閱文件**：`skills/prompts/transcribe.prompt.md`
+> **參閱文件**：`.agent/workflows/transcribe.prompt.md`
 
 ### Step 4: 摘要與分析 (Summarization & Analysis) — `/summarize`
 這一步是你展現分析能力的時候。
 閱讀指定的文字稿（`.txt`），並根據提示詞生成分析報告。
-> **參閱文件**：`skills/prompts/summarize.prompt.md` 以及 `skills/prompts/summarize.md`
+> **參閱文件**：`.agent/workflows/summarize.prompt.md` 以及 `.agent/workflows/summarize.md`
 
 ### Step 5: 觀點對比分析 (Comparative Analysis) — `/compare`
 讀取各頻道最新產生的摘要，並根據最新內容的類型動態切換分析模式（模式 A、B、C），自動選擇主比較對象進行多層次觀點對比與異同分析，將結果輸出至 `docs/每日新聞綜述/` 目錄。
-> **參閱文件**：`skills/prompts/compare.prompt.md`
+> **參閱文件**：`.agent/workflows/compare.prompt.md`
 
 ### Step 6: 同步至 Gist (Sync to Gist) — `/sync_gist`
 將生成的重點筆記與每日新聞綜述自動同步至 GitHub Gist。
