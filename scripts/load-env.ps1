@@ -26,6 +26,7 @@ Get-Content $envFile | ForEach-Object {
 }
 
 # --- デフォルト値の補完 ---
+if (-not $env:USE_CONTAINER) { $env:USE_CONTAINER = 'false' }
 if (-not $env:CONTAINER_RUNTIME) { $env:CONTAINER_RUNTIME = 'docker' }
 
 # --- USE_CUDA に基づきコンテナ名と Compose ファイルを決定 ---
@@ -37,4 +38,4 @@ if ($env:USE_CUDA -eq 'true') {
     $env:CUI_COMPOSE_FILE = 'docker-compose.cpu.yml'
 }
 
-Write-Host "[load-env] RUNTIME=$($env:CONTAINER_RUNTIME)  USE_CUDA=$($env:USE_CUDA)  CONTAINER=$($env:CUI_CONTAINER)  COMPOSE=$($env:CUI_COMPOSE_FILE)"
+Write-Host "[load-env] RUNTIME=$($env:CONTAINER_RUNTIME)  USE_CONTAINER=$($env:USE_CONTAINER)  USE_CUDA=$($env:USE_CUDA)  CONTAINER=$($env:CUI_CONTAINER)  COMPOSE=$($env:CUI_COMPOSE_FILE)"

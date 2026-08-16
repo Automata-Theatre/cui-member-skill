@@ -1,0 +1,37 @@
+---
+mode: 'agent'
+description: 'Step 1: 下載 YouTube 影片音訊與中繼資料'
+---
+
+## 任務：下載音訊 (Download Audio)
+
+請根據使用者的作業系統（OS）使用對應的指令下載 YouTube 影片音訊：
+
+### 執行方式 (Mac & Windows 共用)
+無論作業系統為何，請**一律先執行對應的載入腳本**取得環境變數，**絕對不要直接讀取 `.env` 文件**：
+- **Mac**: `source scripts/load-env.sh`
+- **Windows**: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1`
+
+執行後，請依據腳本輸出的環境變數或回顯結果，判斷是否需使用容器（依據 `AGENTS.md` 規則）。
+- **若需使用容器**：
+  先確保容器已啟動（例如 `... compose -f <compose_file> up -d`），再執行下載指令：
+  - Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/download_audio.py "${input:url}"`
+  - Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/download_audio.py "${input:url}"`
+- **若不需使用容器**：
+  直接執行：`uv run skills/download_audio.py "${input:url}"`
+
+### 執行後確認事項與自動化流程
+1. 確認工作目錄下已生成 `.mp3` 音訊檔案與 `.info.json` 中繼資料檔案。
+2. **自動進入後續處理流程**：在成功下載後，請你**自動並依序**執行接下來的處理步驟，直到完成摘要為止：
+   - 執行 `/organize` 將音訊與中繼資料歸檔到對應的分類與日期資料夾。
+   - 執行 `/transcribe` 對剛整理好的 `.mp3` 檔案進行語音轉文字。
+   - 執行 `/summarize` 針對轉換出的文字稿 (`.txt`) 進行分析與摘要。
+3. 全部完成後，向使用者回報流程執行完畢與各檔案產生的結果。
+
+### 注意
+- 預設會讀取 `.env` 中的 `COOKIES_PATH`（通常為 `./cookies.txt`）以下載會員限定影片。
+- **⚠️ 處理 Cookie 錯誤（[COOKIE_ERROR]）**：若腳本輸出 `[COOKIE_ERROR]` 或因 YouTube 認證失敗而中斷，請**立即終止**所有後續流程。請向使用者提示目前的 Cookie 檔案路徑（如 `.env` 中的 `COOKIES_PATH` 或是預設的 `./cookies.txt`），並詢問使用者要選擇以下哪種方式處理：
+  1. 手動更新目前的 Cookie 檔案（提示檔案路徑）
+  2. 指定另一個新的 Cookie 檔案路徑
+  3. 改為從瀏覽器自動讀取 Cookie（請使用者指定瀏覽器，例如 chrome, edge, firefox）
+- 所有回覆請使用**繁體中文**。

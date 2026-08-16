@@ -87,5 +87,6 @@
 5. **容器工具選擇 (Windows 必讀)**：在 Windows 環境執行**任何** `exec cui-tools ...` 指令之前，務必先讀取 `.env` 中的 `CONTAINER_RUNTIME` 值，並以該值取代指令中的容器工具名稱（例如 `podman exec cui-tools ...` 或 `docker exec cui-tools ...`）。若 `.env` 中未設定 `CONTAINER_RUNTIME`，預設使用 `docker`。**絕不可在未確認 `CONTAINER_RUNTIME` 前直接寫死 `docker exec`。**
 6. **執行環境與依賴檢查**：在執行後續處理前，你必須遵守以下檢查邏輯：
    - **一律先執行** `source scripts/load-env.sh` (Mac) 或 `. scripts/load-env.ps1` (Windows) 以讀取環境變數。**絕對不要**使用讀檔工具直接讀取 `.env` 來判斷條件。
-   - **檢查容器需求**：若 `USE_CONTAINER` 為 Truthy、或 `USE_CUDA` 為 Truthy、或 `WHISPER_MODE` 為 `local` 時：必須使用容器。若未偵測到 `CONTAINER_RUNTIME` 所指定的容器工具（`docker` 或 `podman`），請立即停止後續處理，並促請使用者安裝該容器工具。
-   - **不需容器的情況**：若不滿足強制使用容器的條件時，不使用容器。若偵測到未安裝 `uv`，請立即停止後續處理，並促請使用者安裝 `uv`。
+   - **Windows 檢查容器需求**：若 `USE_CONTAINER` 為 Truthy、或 `USE_CUDA` 為 Truthy、或 `WHISPER_MODE` 為 `local` 時：必須使用容器。若未偵測到 `CONTAINER_RUNTIME` 所指定的容器工具（`docker` 或 `podman`），請立即停止後續處理，並促請使用者安裝該容器工具。
+   - **Mac 檢查容器需求**：僅以 `USE_CONTAINER` 判斷是否使用容器；**忽略** `USE_CUDA`，且 `WHISPER_MODE`（包含 `local`）**不會**強制啟用容器。
+   - **不需容器的情況**：在各作業系統上，若判定為不使用容器且偵測到未安裝 `uv`，請立即停止後續處理，並促請使用者安裝 `uv`。

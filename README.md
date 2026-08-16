@@ -84,7 +84,7 @@ graph TD
 
 為了確保 AI Agent 能順利且安全地執行腳本，本專案在執行後續處理前會進行以下的依賴檢查。若缺乏相關依賴，Agent 將中斷執行並提示您安裝：
 
-- **Mac 環境**：若偵測到未安裝 `uv`，將停止執行。請參考 [uv 官方 GitHub](https://github.com/astral-sh/uv) 進行安裝。
+- **Mac 環境**：僅以 `USE_CONTAINER` 判斷是否使用容器；`USE_CUDA` 會被忽略，且 `WHISPER_MODE`（包含 `local`）不會自動強制使用容器。若判定為不使用容器且偵測到未安裝 `uv`，將停止執行。請參考 [uv 官方 GitHub](https://github.com/astral-sh/uv) 進行安裝。
 - **Windows 環境**：
   - 當 `USE_CONTAINER` 為 Truthy、或 `USE_CUDA` 為 Truthy、或 `WHISPER_MODE` 為 `local` 時：必須使用容器。若未偵測到 `CONTAINER_RUNTIME` 所指定的容器工具（`docker` 或 `podman`），將停止執行並促請安裝。
   - 當 `USE_CONTAINER` 為 Falsy（且不滿足強制使用容器的條件）時：不使用容器。若偵測到未安裝 `uv`，將停止執行。請參考 [uv 官方 GitHub](https://github.com/astral-sh/uv) 進行安裝。
