@@ -12,14 +12,17 @@ description: 'Step 3: 使用 Whisper 將音訊轉為文字稿'
 uv run skills/transcribe.py "${input:audioFilePath}"
 ```
 
-### 🪟 Windows 版 (完全容器化)
-Windows 將 `.env` 載入為環境變數後，再執行轉譯（路徑需為相對於工作目錄，如 `docs/會員直播/20260717/xxx.mp3`）：
-```powershell
-# 尚未初始化時（同一次 Shell 已執行過 download 則略過）
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1
-# 轉譯
-& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/transcribe.py "${input:audioFilePath}"
-```
+### 🪟 Windows 版
+Windows 請先判斷是否需使用容器。依據 `AGENTS.md` 規則：
+- 若需使用容器（`USE_CONTAINER=true` 等條件），載入環境變數後執行容器內轉譯：
+  ```powershell
+  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1
+  & $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/transcribe.py "${input:audioFilePath}"
+  ```
+- 否則（不使用容器），直接在 PowerShell 執行：
+  ```powershell
+  uv run skills/transcribe.py "${input:audioFilePath}"
+  ```
 
 ### 執行後確認事項
 1. 確認在音訊檔案的同一目錄下已生成同名的 `.txt` 文字稿檔案。

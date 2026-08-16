@@ -11,7 +11,7 @@ description: 'Step 2: 判斷影片類型並整理至 docs/ 目錄'
 1. **定位目標檔案**：根據提供的音訊檔案路徑 (`${input:audioFilePath}`)，找出對應的 `.mp3` 與相鄰的 `.info.json` 檔案。
 2. **讀取中繼資料**：使用 `skills/read_metadata.py` 讀取 `.info.json` 的關鍵資訊（標題、頻道、上傳日期等）。
    - **Mac**: `uv run skills/read_metadata.py <info.json 路徑>`
-   - **Windows**: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/read_metadata.py <info.json 路徑>`（`$env:CUI_CONTAINER` 等環境變數應已由 `load-env.ps1` 設定）
+   - **Windows**: 依環境設定使用容器指令（如 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/read_metadata.py <info.json 路徑>`）或直接執行（`uv run skills/read_metadata.py <info.json 路徑>`）
    - 腳本會輸出影片 ID、標題、頻道名稱、上傳日期、URL 與時長等欄位。
 3. **判斷頻道與影片類型**：
    - 首先檢查 `read_metadata.py` 輸出的 `頻道`（channel）欄位與標題：
