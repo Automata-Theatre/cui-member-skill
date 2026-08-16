@@ -61,23 +61,20 @@
 
 ### Step 6: 同步至 Gist (Sync to Gist) — `/sync_gist`
 將生成的重點筆記與每日新聞綜述自動同步至 GitHub Gist。
-根據作業系統執行對應指令：
-- **Mac**: `uv run skills/sync_gist.py`
-- **Windows**: 依據環境變數設定決定是否使用容器（參見下方「執行環境與依賴檢查」規則），若使用容器則執行 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/sync_gist.py`，否則直接執行 `uv run skills/sync_gist.py`。
+請**一律先執行對應的載入腳本** (`load-env.sh` 或 `load-env.ps1`) 取得環境變數。
+依據環境變數判斷是否需使用容器，若需使用容器則加上容器執行前綴（例如 Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/sync_gist.py`，Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/sync_gist.py`），否則直接執行 `uv run skills/sync_gist.py`。
 > 執行前請確保 `.env` 中已設定 `GITHUB_TOKEN` 與 `GIST_ID`。
 
 ### Step 7: アーカイブ同期 (Sync to Archive) — `/archive`
 `./archive` 配下の任意の名前のアーカイブ用リポジトリが存在する場合、`docs` 内の `.md` ファイルをコピーし、Git コミットを行う。
-根據作業系統執行對應指令：
-- **Mac**: `uv run skills/sync_archive.py`
-- **Windows**: 依據環境變數設定決定是否使用容器，若使用容器則執行 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/sync_archive.py`，否則直接執行 `uv run skills/sync_archive.py`。
+請**一律先執行對應的載入腳本** (`load-env.sh` 或 `load-env.ps1`) 取得環境變數。
+依據環境變數判斷是否需使用容器，若需使用容器則加上容器執行前綴（例如 Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/sync_archive.py`，Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/sync_archive.py`），否則直接執行 `uv run skills/sync_archive.py`。
 > `./archive` 配下にプロジェクトが存在しない場合は何もしない。
 
 ### Step 8: 從存檔提取 (Pull from Archive) — `/pull_from_archive`
 手動將存檔的內容提取回本機的 `docs` 與 `logs` 目錄（不覆蓋現有檔案），此為 `/archive` 的反向操作。請注意，此指令僅限手動使用，不包含在 `/process` 等自動流程內。
-根據作業系統執行對應指令：
-- **Mac**: `uv run skills/pull_from_archive.py`
-- **Windows**: 依據環境變數設定決定是否使用容器，若使用容器則執行 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/pull_from_archive.py`，否則直接執行 `uv run skills/pull_from_archive.py`。
+請**一律先執行對應的載入腳本** (`load-env.sh` 或 `load-env.ps1`) 取得環境變數。
+依據環境變數判斷是否需使用容器，若需使用容器則加上容器執行前綴（例如 Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/pull_from_archive.py`，Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/pull_from_archive.py`），否則直接執行 `uv run skills/pull_from_archive.py`。
 > 若 `./archive` 目錄下有多個存檔專案，將會提示使用者保留一個後再執行。
 
 ---
@@ -89,7 +86,6 @@
 4. **絕對禁止污染系統環境**：身為 AI Agent，你在此專案中**發誓**執行任何 Python 腳本或安裝套件時，**絕對只使用 `uv`**（例如 `uv run`、`uv pip install` 等），**絕不使用系統全局的 `python` 或 `pip` 指令**，以確保系統環境不被污染。
 5. **容器工具選擇 (Windows 必讀)**：在 Windows 環境執行**任何** `exec cui-tools ...` 指令之前，務必先讀取 `.env` 中的 `CONTAINER_RUNTIME` 值，並以該值取代指令中的容器工具名稱（例如 `podman exec cui-tools ...` 或 `docker exec cui-tools ...`）。若 `.env` 中未設定 `CONTAINER_RUNTIME`，預設使用 `docker`。**絕不可在未確認 `CONTAINER_RUNTIME` 前直接寫死 `docker exec`。**
 6. **執行環境與依賴檢查**：在執行後續處理前，你必須遵守以下檢查邏輯：
-   - **Mac 環境**：若偵測到未安裝 `uv`，請立即停止後續處理，並促請使用者安裝 `uv`。
-   - **Windows 環境**：
-     - 若 `USE_CONTAINER` 為 Truthy、或 `USE_CUDA` 為 Truthy、或 `WHISPER_MODE` 為 `local` 時：必須使用容器。若未偵測到 `CONTAINER_RUNTIME` 所指定的容器工具（`docker` 或 `podman`），請立即停止後續處理，並促請使用者安裝該容器工具。
-     - 若 `USE_CONTAINER` 為 Falsy（且不滿足強制使用容器的條件）時：不使用容器。若偵測到未安裝 `uv`，請立即停止後續處理，並促請使用者安裝 `uv`。
+   - **一律先執行** `source scripts/load-env.sh` (Mac) 或 `. scripts/load-env.ps1` (Windows) 以讀取環境變數。**絕對不要**使用讀檔工具直接讀取 `.env` 來判斷條件。
+   - **檢查容器需求**：若 `USE_CONTAINER` 為 Truthy、或 `USE_CUDA` 為 Truthy、或 `WHISPER_MODE` 為 `local` 時：必須使用容器。若未偵測到 `CONTAINER_RUNTIME` 所指定的容器工具（`docker` 或 `podman`），請立即停止後續處理，並促請使用者安裝該容器工具。
+   - **不需容器的情況**：若不滿足強制使用容器的條件時，不使用容器。若偵測到未安裝 `uv`，請立即停止後續處理，並促請使用者安裝 `uv`。

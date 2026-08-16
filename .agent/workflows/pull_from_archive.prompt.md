@@ -10,21 +10,16 @@ description: "手動從 archive 目錄的 Git 專案中提取資料回本地端"
 
 請判斷目前的作業系統，並執行以下指令：
 
-**Mac 系統：**
-```bash
-uv run skills/pull_from_archive.py
-```
+### 執行方式 (Mac & Windows 共用)
+無論作業系統為何，請**一律先執行對應的載入腳本**取得環境變數，**絕對不要直接讀取 `.env` 文件**：
+- **Mac**: `source scripts/load-env.sh`
+- **Windows**: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1`
 
-**Windows 系統：**
-請先判斷是否需使用容器。依據 `AGENTS.md` 中的規則：
-- 若 `USE_CONTAINER` 為 true，或 `USE_CUDA` 為 true，或 `WHISPER_MODE` 為 local，請使用容器執行：
-  ```powershell
-  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1
-  & $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/pull_from_archive.py
-  ```
-- 否則（不使用容器），直接在 PowerShell 執行：
-  ```powershell
-  uv run skills/pull_from_archive.py
-  ```
+執行後，請依據腳本輸出的環境變數或回顯結果，判斷是否需使用容器（依據 `AGENTS.md` 規則）。
+- **若需使用容器**：
+  - Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/pull_from_archive.py`
+  - Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/pull_from_archive.py`
+- **若不需使用容器**：
+  直接執行：`uv run skills/pull_from_archive.py`
 
 > **注意：** 此為手動專用指令，請勿在 `/process` 等自動流程中呼叫此指令。

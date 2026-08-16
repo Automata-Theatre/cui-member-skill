@@ -7,27 +7,18 @@ description: 'Step 1: 下載 YouTube 影片音訊與中繼資料'
 
 請根據使用者的作業系統（OS）使用對應的指令下載 YouTube 影片音訊：
 
-### 🍎 Mac 版 (Apple Silicon / Intel)
-```bash
-uv run skills/download_audio.py "${input:url}"
-```
+### 執行方式 (Mac & Windows 共用)
+無論作業系統為何，請**一律先執行對應的載入腳本**取得環境變數，**絕對不要直接讀取 `.env` 文件**：
+- **Mac**: `source scripts/load-env.sh`
+- **Windows**: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1`
 
-### 🪟 Windows 版
-Windows 請先判斷是否需使用容器。依據 `AGENTS.md` 規則：
-- 若需使用容器（`USE_CONTAINER=true` 等條件），載入環境變數、確保容器啟動後執行：
-  ```powershell
-  # .env 讀入與環境初始化（第一次或設定變更時執行）
-  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1
-  # 容器未啟動時起動
-  & $env:CONTAINER_RUNTIME compose -f $env:CUI_COMPOSE_FILE up -d
-  # 音聲下載
-  & $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/download_audio.py "${input:url}"
-  ```
-  > **注意**: `load-env.ps1` 必須以ドットソース（`. `）執行。
-- 否則（不使用容器），直接在 PowerShell 執行：
-  ```powershell
-  uv run skills/download_audio.py "${input:url}"
-  ```
+執行後，請依據腳本輸出的環境變數或回顯結果，判斷是否需使用容器（依據 `AGENTS.md` 規則）。
+- **若需使用容器**：
+  先確保容器已啟動（例如 `... compose -f <compose_file> up -d`），再執行下載指令：
+  - Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/download_audio.py "${input:url}"`
+  - Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/download_audio.py "${input:url}"`
+- **若不需使用容器**：
+  直接執行：`uv run skills/download_audio.py "${input:url}"`
 
 ### 執行後確認事項與自動化流程
 1. 確認工作目錄下已生成 `.mp3` 音訊檔案與 `.info.json` 中繼資料檔案。

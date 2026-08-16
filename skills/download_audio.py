@@ -1,6 +1,7 @@
 # /// script
 # dependencies = [
 #     "python-dotenv",
+#     "yt-dlp",
 # ]
 # ///
 import os

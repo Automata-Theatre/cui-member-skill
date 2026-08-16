@@ -9,13 +9,19 @@ description: '自動掃描小翠時政財經最新影片，判斷是否已下載
 
 ### 執行步驟
 
-#### Step 0: 初始化 Windows 環境（Windows 限定）
-若在 Windows 環境執行，請**先**判斷是否需使用容器。依據 `AGENTS.md` 的規則：
-- 若需使用容器（`USE_CONTAINER=true` 等條件），請執行下列指令將 `.env` 載入為環境變數，後續指令均使用 `$env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run ...`：
+#### Step 0: 初始化環境與讀取設定
+無論是在 Windows 或 Mac 環境，請**一律先執行對應的載入腳本**，以取得環境變數與判斷條件，**絕對不要直接讀取 `.env` 文件**：
+- **Windows**:
   ```powershell
   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1
   ```
-- 否則（不使用容器），後續指令直接使用 `uv run ...` 即可，無需載入。
+- **Mac**:
+  ```bash
+  source scripts/load-env.sh
+  ```
+執行後，根據腳本輸出的環境變數或回顯結果判斷是否需使用容器（依據 `AGENTS.md` 的規則）。
+- 若需使用容器，後續指令請加上容器執行前綴，例如 `$env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run ...` (Windows) 或 `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run ...` (Mac)。
+- 若不需使用容器，則後續指令直接使用 `uv run ...` 即可。
 #### Step 1: 取得最新影片資訊
 1. 根據作業系統執行對應指令，取得「小翠時政財經」最新直播影片的標題與 URL：
    - **Mac**: `uv run skills/get_latest_video.py "https://www.youtube.com/@cui_news/streams"`

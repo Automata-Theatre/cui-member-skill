@@ -7,22 +7,17 @@ description: 'Step 3: 使用 Whisper 將音訊轉為文字稿'
 
 請根據使用者的作業系統（OS）使用對應的指令，將指定的音訊檔案轉為文字稿：
 
-### 🍎 Mac 版 (Apple Silicon / Intel)
-```bash
-uv run skills/transcribe.py "${input:audioFilePath}"
-```
+### 執行方式 (Mac & Windows 共用)
+無論作業系統為何，請**一律先執行對應的載入腳本**取得環境變數，**絕對不要直接讀取 `.env` 文件**：
+- **Mac**: `source scripts/load-env.sh`
+- **Windows**: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1`
 
-### 🪟 Windows 版
-Windows 請先判斷是否需使用容器。依據 `AGENTS.md` 規則：
-- 若需使用容器（`USE_CONTAINER=true` 等條件），載入環境變數後執行容器內轉譯：
-  ```powershell
-  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1
-  & $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/transcribe.py "${input:audioFilePath}"
-  ```
-- 否則（不使用容器），直接在 PowerShell 執行：
-  ```powershell
-  uv run skills/transcribe.py "${input:audioFilePath}"
-  ```
+執行後，請依據腳本輸出的環境變數或回顯結果，判斷是否需使用容器（依據 `AGENTS.md` 規則）。
+- **若需使用容器**：
+  - Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/transcribe.py "${input:audioFilePath}"`
+  - Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/transcribe.py "${input:audioFilePath}"`
+- **若不需使用容器**：
+  直接執行：`uv run skills/transcribe.py "${input:audioFilePath}"`
 
 ### 執行後確認事項
 1. 確認在音訊檔案的同一目錄下已生成同名的 `.txt` 文字稿檔案。
