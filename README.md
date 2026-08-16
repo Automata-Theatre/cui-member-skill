@@ -80,6 +80,15 @@ graph TD
 
 > ⚠️ **Mac 版** 與 **Windows 版** 的設定有所不同，請根據您的系統參考下方對應章節。
 
+### AI Agent 執行環境與依賴檢查
+
+為了確保 AI Agent 能順利且安全地執行腳本，本專案在執行後續處理前會進行以下的依賴檢查。若缺乏相關依賴，Agent 將中斷執行並提示您安裝：
+
+- **Mac 環境**：若偵測到未安裝 `uv`，將停止執行。請參考 [uv 官方 GitHub](https://github.com/astral-sh/uv) 進行安裝。
+- **Windows 環境**：
+  - 當 `USE_CONTAINER` 為 Truthy、或 `USE_CUDA` 為 Truthy、或 `WHISPER_MODE` 為 `local` 時：必須使用容器。若未偵測到 `CONTAINER_RUNTIME` 所指定的容器工具（`docker` 或 `podman`），將停止執行並促請安裝。
+  - 當 `USE_CONTAINER` 為 Falsy（且不滿足強制使用容器的條件）時：不使用容器。若偵測到未安裝 `uv`，將停止執行。請參考 [uv 官方 GitHub](https://github.com/astral-sh/uv) 進行安裝。
+
 ---
 
 ## 🍎 Mac 版設定（適用 Apple Silicon M3 或以上）
@@ -169,13 +178,15 @@ WHISPER_MODEL=mlx-community/whisper-large-v3-mlx
 
 ## 🪟 Windows 版設定（完全容器化支援 Docker / Podman）
 
-Windows 版本現在採用**完全容器化**架構，不需要在主機上安裝 Python、uv、yt-dlp 或 ffmpeg。只需準備好容器環境即可。
+Windows 版本支援**容器化**架構。當啟用容器時（例如預設的 `WHISPER_MODE=local`，或設定 `USE_CONTAINER` / `USE_CUDA` 為 Truthy 時），不需要在主機上安裝 Python、uv、yt-dlp 或 ffmpeg，只需準備好容器環境即可。
+若您設定 `USE_CONTAINER=false` 且不滿足上述強制容器條件，系統將直接於本機執行腳本。此時您必須在主機上安裝 `uv`（請參考 [uv 官方 GitHub](https://github.com/astral-sh/uv)）、`yt-dlp` 與 `ffmpeg`（可透過 `winget install --id=Gyan.FFmpeg -e` 安裝），操作方式與 Mac 版類似。
 
 ### 1. 安裝必要工具
 
 - 請安裝 [Docker Desktop](https://www.docker.com/products/docker-desktop/) 或 [Podman Desktop](https://podman-desktop.io/)。
   - 有 NVIDIA GPU 的環境請另行安裝 NVIDIA Container Toolkit 以支援 CUDA 加速。
 - 所有 Python 工具皆在容器內執行，**主機無需安裝 Python、uv、yt-dlp 或 ffmpeg**。
+  - *註：若選擇本機執行模式，ffmpeg 可透過執行 `winget install --id=Gyan.FFmpeg -e` 快速安裝。*
 
 ### 2. 準備 Cookies 檔案（下載會員限定影片）
 
