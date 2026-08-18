@@ -53,7 +53,9 @@ def main():
         "-o",
         "%(id)s.%(ext)s",
         "--js-runtimes",
-        "node"
+        "node",
+        "--remote-components",
+        "ejs:github"
     ]
     
     if cookies_file and os.path.exists(cookies_file):
