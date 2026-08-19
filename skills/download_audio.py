@@ -27,11 +27,13 @@ def main():
         browser = None
 
     cookies_file = args.cookies
-    if not cookies_file:
+    if cookies_file is None:
         cookies_file = os.environ.get("COOKIES_PATH", "./cookies.txt")
+    if cookies_file and cookies_file.lower() in ("none", "false", ""):
+        cookies_file = None
 
     print(f"正在從 {args.url} 下載音訊...")
-    if os.path.exists(cookies_file):
+    if cookies_file and os.path.exists(cookies_file):
         print(f"使用 Cookies 檔案: {cookies_file}")
     elif browser:
         print(f"自動讀取瀏覽器 Cookies: {browser}")
@@ -55,7 +57,9 @@ def main():
         "--js-runtimes",
         "node",
         "--remote-components",
-        "ejs:github"
+        "ejs:github",
+        "--extractor-args",
+        "youtube:player_client=ios,web,android"
     ]
     
     if cookies_file and os.path.exists(cookies_file):
@@ -75,8 +79,38 @@ def main():
         print("\n下載完成！音訊檔案 (.mp3) 與中繼資料 (.info.json) 已保存於當前目錄。")
         print("後續請由 AI Agent 根據這些資訊（如標題、頻道名稱）判斷並建立對應的分類資料夾，然後進行整理。")
     except subprocess.CalledProcessError as e:
+        # 若使用 cookies 失敗，且可能是過期 cookie 導致的 403，嘗試不帶 cookies 重試（適用於公開影片）
+        if (cookies_file or browser) and any(kw in (e.stderr or "").lower() for kw in ["403", "forbidden", "no longer valid", "rotated"]):
+            print("\n[NOTICE] 偵測到 Cookies 可能失效或過期，正在嘗試不使用 Cookies 下載公開影片...")
+            retry_cmd = [
+                "yt-dlp",
+                "--windows-filenames",
+                "-x",
+                "--audio-format",
+                "mp3",
+                "--write-info-json",
+                "-o",
+                "%(id)s.%(ext)s",
+                "--js-runtimes",
+                "node",
+                "--remote-components",
+                "ejs:github",
+                "--extractor-args",
+                "youtube:player_client=ios,web,android",
+                args.url
+            ]
+            try:
+                subprocess.run(retry_cmd, check=True, stderr=subprocess.PIPE, text=True)
+                from log_download import add_log
+                add_log(args.url)
+                print("\n下載完成！音訊檔案 (.mp3) 與中繼資料 (.info.json) 已保存於當前目錄。")
+                print("後續請由 AI Agent 根據這些資訊（如標題、頻道名稱）判斷並建立對應的分類資料夾，然後進行整理。")
+                return
+            except subprocess.CalledProcessError as e_retry:
+                e = e_retry
+
         stderr_lower = e.stderr.lower() if e.stderr else ""
-        if any(keyword in stderr_lower for keyword in ["sign in", "bot", "cookie", "member", "private"]):
+        if any(keyword in stderr_lower for keyword in ["sign in", "bot", "cookie", "member", "private", "members-only"]):
             print(f"\n[COOKIE_ERROR] YouTube 拒絕存取。Cookie 可能無效、過期或未提供。\n詳細錯誤: {e.stderr}", file=sys.stderr)
         else:
             print(f"下載失敗: {e.stderr if e.stderr else e}", file=sys.stderr)
