@@ -27,6 +27,15 @@ fi
 # --- コンテナ名と Compose ファイルを決定 ---
 # macOS では USE_CUDA を無視し、常に CPU コンテナ設定を使う。
 if [ "$(uname -s)" = "Darwin" ]; then
+    # 嘗試載入使用者的環境設定，以確保非互動式 Shell (如 AI Agent) 具備完整的 PATH (包含 Homebrew 等)
+    for profile in "$HOME/.zprofile" "$HOME/.bash_profile" "$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc"; do
+        if [ -f "$profile" ]; then
+            source "$profile" >/dev/null 2>&1 || true
+        fi
+    done
+    # 作為保底，仍確保 Homebrew 預設路徑存在
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+
     if [ "$USE_CUDA" = "true" ]; then
         echo "[load-env] NOTICE: macOS では USE_CUDA=true を無視し、CPU 設定を使用します。" >&2
     fi
