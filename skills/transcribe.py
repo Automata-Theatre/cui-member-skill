@@ -86,9 +86,9 @@ def ensure_file_under_limit(audio_path: str, max_bytes: int = 24 * 1024 * 1024) 
 
 def format_segments(segments: list) -> str:
     """
-    セグメントリストを整形して文字列を返す。
-    - 各セグメントは改行で区切る
-    - 句点（。！？…）で終わるセグメントの後には空行を追加
+    將片段列表整理為字串並返回。
+    - 各片段以換行分隔
+    - 以句點（。！？…）結尾的片段後方加插空行
     """
     SENTENCE_END = ("。", "！", "？", "…", "!", "?")
     lines = []
@@ -98,12 +98,12 @@ def format_segments(segments: list) -> str:
             continue
         lines.append(text)
         if text.endswith(SENTENCE_END):
-            lines.append("")   # 文末後に空行
+            lines.append("")   # 句尾後加插空行
     return "\n".join(lines)
 
 
 def print_progress(current_sec: float, total_sec: float, prefix: str = "") -> None:
-    """現在の進捗をコンソールに出力する（stderr）。"""
+    """將目前進度輸出至主控台（stderr）。"""
     if total_sec <= 0:
         return
     pct = min(current_sec / total_sec * 100, 100.0)
@@ -115,7 +115,7 @@ def print_progress(current_sec: float, total_sec: float, prefix: str = "") -> No
 
 
 # ---------------------------------------------------------------------------
-# 転写バックエンド
+# 轉寫後端
 # ---------------------------------------------------------------------------
 
 def transcribe_local(audio_path: str) -> str:
@@ -128,13 +128,13 @@ def transcribe_local(audio_path: str) -> str:
         model = os.getenv("WHISPER_MODEL", "mlx-community/whisper-medium-mlx-8bit")
         print(f"載入模型: {model}")
 
-        # mlx_whisper は verbose=True のとき segment を stdout に流す。
-        # 進捗を自前で取るため verbose=False にし、segments を走査する。
+        # mlx_whisper 在 verbose=True 時會將 segment 輸出至 stdout。
+        # 為了自行取得進度，設 verbose=False 並遍歷 segments。
         raw = mlx_whisper.transcribe(
             audio_path,
             path_or_hf_repo=model,
             language="zh",
-            verbose=False       # 自前で進捗表示するため False
+            verbose=False       # 自行顯示進度，因此設為 False
         )
         segments = raw.get("segments", [])
         seg_dicts = []
@@ -182,13 +182,13 @@ def transcribe_openai(audio_path: str) -> str:
                 model="whisper-1",
                 file=f,
                 language="zh",
-                response_format="verbose_json"  # セグメント情報を取得
+                response_format="verbose_json"  # 取得片段資訊
             )
     finally:
         if is_temp and os.path.exists(target_path):
             os.remove(target_path)
 
-    # verbose_json の場合 segments が含まれる
+    # verbose_json 時會包含 segments
     if hasattr(transcript, "segments") and transcript.segments:
         seg_dicts = [{"text": s.text} for s in transcript.segments]
         return format_segments(seg_dicts)
@@ -234,7 +234,7 @@ def transcribe_azure(audio_path: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# エントリポイント
+# 程式進入點
 # ---------------------------------------------------------------------------
 
 def main():

@@ -1,23 +1,23 @@
-# load-env.ps1 — .env を環境変数に展開し、CUDA/CPU コンテナ設定を初期化する
-# 使用法（ドットソース）: . scripts/load-env.ps1
+# load-env.ps1 — 將 .env 展開為環境變數，並初始化 CUDA/CPU 容器設定
+# 使用方法（dot-source）: . scripts/load-env.ps1
 #
-# bash の `set -a; . .env; set +a` 相当の処理を PowerShell で実行します。
-# 呼び出し後、以下の環境変数が利用可能になります:
-#   $env:CONTAINER_RUNTIME  — 使用するコンテナツール (docker または podman)
-#   $env:CUI_CONTAINER      — 操作対象のコンテナ名
-#   $env:CUI_COMPOSE_FILE   — 使用する docker-compose ファイルパス
+# 執行等同於 bash 的 `set -a; . .env; set +a` 處理。
+# 呼叫後可使用以下環境變數：
+#   $env:CONTAINER_RUNTIME  — 使用的容器工具 (docker 或 podman)
+#   $env:CUI_CONTAINER      — 操作對象的容器名稱
+#   $env:CUI_COMPOSE_FILE   — 使用的 docker-compose 檔案路徑
 
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 
-# --- .env を Process スコープの環境変数に展開 ---
+# --- 將 .env 展開為 Process 範圍的環境變數 ---
 $envFile = Join-Path $ProjectRoot '.env'
 if (-not (Test-Path $envFile)) {
-    Write-Warning "[load-env] .env が見つかりません: $envFile"
+    Write-Warning "[load-env] 找不到 .env: $envFile"
     return
 }
 
 Get-Content $envFile | ForEach-Object {
-    # コメント行・空行をスキップし、KEY=VALUE 形式のみ処理
+    # 跳過註解行與空行，僅處理 KEY=VALUE 格式
     if ($_ -match '^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$') {
         $name  = $Matches[1].Trim()
         $value = $Matches[2].Trim().Trim('"').Trim("'")
@@ -25,11 +25,11 @@ Get-Content $envFile | ForEach-Object {
     }
 }
 
-# --- デフォルト値の補完 ---
+# --- 補足預設值 ---
 if (-not $env:USE_CONTAINER) { $env:USE_CONTAINER = 'false' }
 if (-not $env:CONTAINER_RUNTIME) { $env:CONTAINER_RUNTIME = 'docker' }
 
-# --- USE_CUDA に基づきコンテナ名と Compose ファイルを決定 ---
+# --- 依據 USE_CUDA 決定容器名稱與 Compose 檔案 ---
 if ($env:USE_CUDA -eq 'true') {
     $env:CUI_CONTAINER    = 'cui-tools-cuda'
     $env:CUI_COMPOSE_FILE = 'docker-compose.cuda.yml'

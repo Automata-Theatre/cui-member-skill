@@ -24,7 +24,7 @@
 > | `/summarize` | Step 4: 摘要分析 | `.txt` 檔案路徑 |
 > | `/compare` | Step 5: 觀點對比 (每日新聞綜述) | （無） |
 > | `/sync_gist` | Step 6: 同步至 Gist | （無） |
-> | `/archive` | Step 7: アーカイブ同期 | （無） |
+> | `/archive` | Step 7: 同步至存檔 | （無） |
 > | `/pull_from_archive` | Step 8: 從存檔提取（反向操作，僅限手動執行） | （無） |
 
 ### 自動掃描 (Auto-Scan) — `/scan_cui`, `/scan_meitou_news`, `/scan_meitou_stock`
@@ -65,11 +65,11 @@
 依據環境變數判斷是否需使用容器，若需使用容器則加上容器執行前綴（例如 Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/sync_gist.py`，Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/sync_gist.py`），否則直接執行 `uv run skills/sync_gist.py`。
 > 執行前請確保 `.env` 中已設定 `GITHUB_TOKEN` 與 `GIST_ID`。
 
-### Step 7: アーカイブ同期 (Sync to Archive) — `/archive`
-`./archive` 配下の任意の名前のアーカイブ用リポジトリが存在する場合、`docs` 内の `.md` ファイルをコピーし、Git コミットを行う。
+### Step 7: 同步至存檔 (Sync to Archive) — `/archive`
+若 `./archive` 目錄下存在任意名稱的存檔用 Git 儲存庫，則將 `docs` 目錄內的 `.md` 檔案複製至該專案並執行 Git 提交。
 請**一律先執行對應的載入腳本** (`load-env.sh` 或 `load-env.ps1`) 取得環境變數。
 依據環境變數判斷是否需使用容器，若需使用容器則加上容器執行前綴（例如 Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/sync_archive.py`，Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/sync_archive.py`），否則直接執行 `uv run skills/sync_archive.py`。
-> `./archive` 配下にプロジェクトが存在しない場合は何もしない。
+> 若 `./archive` 目錄下不存在任何專案，則不執行任何操作。
 
 ### Step 8: 從存檔提取 (Pull from Archive) — `/pull_from_archive`
 手動將存檔的內容提取回本機的 `docs` 與 `logs` 目錄（不覆蓋現有檔案），此為 `/archive` 的反向操作。請注意，此指令僅限手動使用，不包含在 `/process` 等自動流程內。

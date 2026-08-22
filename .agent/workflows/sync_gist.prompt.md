@@ -3,7 +3,7 @@ mode: 'agent'
 description: 'Step 6: 同步至 Gist'
 ---
 
-# 外部プロンプトの読み込み
-`AGENTS.md` の「Step 6: 同步至 Gist (Sync to Gist) — \`/sync_gist\`」セクションに定義された指示を参考して実行してください。
+# 載入外部提示詞
+請參考 `AGENTS.md` 中「Step 6: 同步至 Gist (Sync to Gist) — `/sync_gist`」章節所定義的指示並執行。
 
 #file:../../AGENTS.md

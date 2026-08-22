@@ -223,11 +223,11 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.p
 | 變數名稱 | 說明 | 預設值 |
 |--------|------|------|
 | `WHISPER_MODE` | 轉譯模式（`local` / `openai` / `azure`） | `local` |
-| `CONTAINER_RUNTIME` | 容器工具（`docker` または `podman`） | `docker` |
+| `CONTAINER_RUNTIME` | 容器工具（`docker` 或 `podman`） | `docker` |
 | `USE_CUDA` | NVIDIA GPU 加速（`true` / `false`） | `false` |
 | `COOKIES_PATH` | 會員限定影片用 Cookies 檔案路徑 | `./cookies.txt` |
-| `OPENAI_API_KEY` | OpenAI API モード時必填 | — |
-| `AZURE_OPENAI_API_KEY` | Azure OpenAI API モード時必填 | — |
+| `OPENAI_API_KEY` | OpenAI API 模式時必填 | — |
+| `AZURE_OPENAI_API_KEY` | Azure OpenAI API 模式時必填 | — |
 | `GITHUB_TOKEN` | 同步 Gist 專用（需 `gist` 權限） | — |
 | `GIST_ID` | 同步 Gist 專用 | — |
 
@@ -235,7 +235,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.p
 
 ### 4. 在容器內執行腳本
 
-`load-env.ps1` 實行後、以下の形式で各スクリプトを実行できます：
+執行 `load-env.ps1` 後，可以以下形式執行各腳本：
 
 ```powershell
 & $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/transcribe.py docs/your-dir/audio.mp3
@@ -249,7 +249,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.p
 
 ### 手動執行步驟（供參考）
 
-> **⚠️ 注意**：以下指令以 Mac 版 (`uv run`) 為例。Windows 版請先執行 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1`、その後すべての `uv run` コマンドを `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run` に置き換えてください。
+> **⚠️ 注意**：以下指令以 Mac 版 (`uv run`) 為例。Windows 版請先執行 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1`，之後將所有 `uv run` 指令替換為 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run`。
 
 **Step 1: 下載音訊**
 ```bash
@@ -282,7 +282,7 @@ uv run skills/sync_gist.py
 > 1. **GitHub Token**：前往 GitHub [Personal Access Tokens (classic)](https://github.com/settings/tokens) 頁面，點擊 `Generate new token (classic)`，填寫名稱並**務必勾選 `gist` 權限**，生成後將其填入 `.env`。
 > 2. **Gist ID**：前往 [GitHub Gist](https://gist.github.com/)，隨意建立一個新的 Gist。建立完成後，網址列中 `https://gist.github.com/您的帳號/` 後方的一長串英數代碼即為 `GIST_ID`。
 
-**Step 7: アーカイブ同期 (Sync to Archive)**
+**Step 7: 同步至存檔 (Sync to Archive)**
 若在 `./archive` 目錄下存在您的 Git 存檔專案（任意名稱的目錄），此腳本會自動將最新的 `docs/**/*.md` 拷貝至專案內，並自動執行 `git add` 與 `git commit`。
 ⚠️ **安全性提示**：為避免在 Docker 容器內掛載 SSH 私鑰帶來潛在的資安風險，本腳本**不會**自動執行 `git push`。請於腳本執行完畢後，手動在主機端推送至 GitHub。
 ```bash
@@ -306,7 +306,7 @@ cui-member-skill/
 ├── docker-compose.cuda.yml    # Windows NVIDIA GPU (CUDA) 專用
 ├── docker-compose.cpu.yml     # Windows CPU 專用（完整獨立設定）
 ├── scripts/
-│   └── load-env.ps1           # .env → 環境變數展開 + CUDA/CPU コンテナ自動選択（PowerShell）
+│   └── load-env.ps1           # .env → 環境變數展開 + CUDA/CPU 容器自動選擇（PowerShell）
 ├── skills/                    # 自動化技能腳本
 │   ├── download_audio.py      # 音訊與中繼數據的下載
 │   ├── transcribe.py          # 語音轉文字（支援 Local/OpenAI/Azure，自動判別 CPU/GPU）

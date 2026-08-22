@@ -1,9 +1,9 @@
 ---
 mode: 'agent'
-description: 'Step 7: アーカイブ同期'
+description: 'Step 7: 同步至存檔'
 ---
 
-# 外部プロンプトの読み込み
-`AGENTS.md` の「Step 7: アーカイブ同期 (Sync to Archive) — \`/archive\`」セクションに定義された指示を参考して実行してください。
+# 載入外部提示詞
+請參考 `AGENTS.md` 中「Step 7: 同步至存檔 (Sync to Archive) — `/archive`」章節所定義的指示並執行。
 
 #file:../../AGENTS.md
