@@ -59,7 +59,7 @@ def main():
         "--remote-components",
         "ejs:github",
         "--extractor-args",
-        "youtube:player_client=ios,web,android"
+        "youtube:player_client=web_embedded,android,ios"
     ]
     
     if cookies_file and os.path.exists(cookies_file):
@@ -96,7 +96,7 @@ def main():
                 "--remote-components",
                 "ejs:github",
                 "--extractor-args",
-                "youtube:player_client=ios,web,android",
+                "youtube:player_client=web_embedded,android,ios",
                 args.url
             ]
             try:
