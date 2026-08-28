@@ -85,8 +85,11 @@
 3. **繁體中文輸出**：所有產生的資料夾名稱、分析報告以及與使用者的對話，請預設使用**繁體中文 (Traditional Chinese)**。
 4. **絕對禁止污染系統環境**：身為 AI Agent，你在此專案中**發誓**執行任何 Python 腳本或安裝套件時，**絕對只使用 `uv`**（例如 `uv run`、`uv pip install` 等），**絕不使用系統全局的 `python` 或 `pip` 指令**，以確保系統環境不被污染。
 5. **容器工具選擇 (Windows 必讀)**：在 Windows 環境執行**任何** `exec cui-tools ...` 指令之前，務必先讀取 `.env` 中的 `CONTAINER_RUNTIME` 值，並以該值取代指令中的容器工具名稱（例如 `podman exec cui-tools ...` 或 `docker exec cui-tools ...`）。若 `.env` 中未設定 `CONTAINER_RUNTIME`，預設使用 `docker`。**絕不可在未確認 `CONTAINER_RUNTIME` 前直接寫死 `docker exec`。**
-6. **執行環境與依賴檢查**：在執行後續處理前，你必須遵守以下檢查邏輯：
-   - **一律先執行** `source scripts/load-env.sh` (Mac) 或 `. scripts/load-env.ps1` (Windows) 以讀取環境變數。**絕對不要**使用讀檔工具直接讀取 `.env` 來判斷條件。
-   - **Windows 檢查容器需求**：若 `USE_CONTAINER` 為 Truthy、或 `USE_CUDA` 為 Truthy、或 `WHISPER_MODE` 為 `local` 時：必須使用容器。若未偵測到 `CONTAINER_RUNTIME` 所指定的容器工具（`docker` 或 `podman`），請立即停止後續處理，並促請使用者安裝該容器工具。
-   - **Mac 檢查容器需求**：僅以 `USE_CONTAINER` 判斷是否使用容器；**忽略** `USE_CUDA`，且 `WHISPER_MODE`（包含 `local`）**不會**強制啟用容器。
-   - **不需容器的情況**：在各作業系統上，若判定為不使用容器且偵測到未安裝 `uv`，請立即停止後續處理，並促請使用者安裝 `uv`。
+6. **執行環境與依賴檢查**：在執行任何後續任務或指令前，請嚴格遵守以下流程：
+   - **步驟一：確認當前環境變數**。你必須**首先單獨執行一次** `source scripts/load-env.sh` (Mac) 或 `. scripts/load-env.ps1` (Windows) 來讀取並確認當前的環境變數設定。**絕對不要**使用讀取檔案的工具直接去讀 `.env` 來判斷條件。
+   - **步驟二：判定容器需求**。根據步驟一取得的環境變數進行判斷：
+     - **Mac 環境**：僅以 `USE_CONTAINER` 判斷是否使用容器；忽略 `USE_CUDA`，且 `WHISPER_MODE`（包含 `local`）不會強制啟用容器。
+     - **Windows 環境**：若 `USE_CONTAINER` 為 Truthy、或 `USE_CUDA` 為 Truthy、或 `WHISPER_MODE` 為 `local` 時，必須使用容器。若未偵測到 `CONTAINER_RUNTIME` 所指定的工具（`docker` 或 `podman`），請立即停止並促請使用者安裝。
+   - **步驟三：執行指令的規則**：
+     - **當 `USE_CONTAINER=false` (不使用容器) 時**：在後續執行**每一次** `uv run` 等命令時，務必將「載入環境變數腳本」與「執行指令」串接在一起執行，以確保指令能吃到正確的路徑設定（例如 Mac: `source scripts/load-env.sh && uv run ...`，Windows: `. scripts/load-env.ps1; uv run ...`）。特別注意，若出現「uv command not found」通常就是因為忘記串接此腳本。若確認未安裝 `uv`，請促請使用者安裝。
+     - **當 `USE_CONTAINER=true` (使用容器) 時**：請直接遵照容器的執行設定（依據 `$CONTAINER_RUNTIME` 等環境變數組裝指令），無須再於每次指令前強加載入腳本的串接。
