@@ -26,6 +26,7 @@
 > | `/sync_gist` | Step 6: 同步至 Gist | （無） |
 > | `/archive` | Step 7: 同步至存檔 | （無） |
 > | `/pull_from_archive` | Step 8: 從存檔提取（反向操作，僅限手動執行） | （無） |
+> | `/hit_rate` | 特殊: 計算預言命中率（消耗較多 Context，僅限手動） | （無） |
 
 ### 自動掃描 (Auto-Scan) — `/scan_cui`, `/scan_meitou_news`, `/scan_meitou_stock`
 如果你希望 AI Agent 獨立去 YouTube 抓取個別頻道的最新影片並處理，請使用這三個指令。
@@ -58,6 +59,11 @@
 ### Step 5: 觀點對比分析 (Comparative Analysis) — `/compare`
 讀取各頻道最新產生的摘要，並根據最新內容的類型動態切換分析模式（模式 A、B、C），自動選擇主比較對象進行多層次觀點對比與異同分析，將結果輸出至 `docs/每日新聞綜述/` 目錄。
 > **參閱文件**：`.agent/workflows/compare.prompt.md`
+
+### 特殊任務: 計算預言命中率 — `/hit_rate`
+讀取 `docs/每日新聞綜述/` 過去產生的歷次報告（若少於 5 份則報錯停止），分析兩位分析師的預言命中率，並給出 3-5 個具體命中或未命中的實例。
+由於會一次讀取多份歷史報告，消耗較多 Token，此指令僅限**手動執行**，未包含在自動排程中。
+> **參閱文件**：`.agent/workflows/hit_rate.prompt.md`
 
 ### Step 6: 同步至 Gist (Sync to Gist) — `/sync_gist`
 將生成的重點筆記與每日新聞綜述自動同步至 GitHub Gist。
