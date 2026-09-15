@@ -27,6 +27,8 @@
 | `/compare` | Step 5: 依最新內容類型動態選擇主比較對象，產生觀點對比與異同分析（`每日新聞綜述`） | （無） |
 | `/sync_gist` | Step 6: 將各分類最新的筆記自動同步至 GitHub Gist（維持單一最新檔案，清理舊檔） | （無） |
 | `/archive` | Step 7: 掃描 `./archive` 配下的 Git 專案並同步文件（安全起見需手動 Push） | （無） |
+| `/pull_from_archive`| Step 8: 從存檔提取（反向操作，將 archive 專案內容提取回本地端，僅限手動執行） | （無） |
+| `/hit_rate` | 特殊任務: 計算兩位分析師的預言命中率（消耗較多 Context，僅限手動執行） 【Preview】 | （無） |
 
 ---
 
@@ -289,6 +291,17 @@ uv run skills/sync_gist.py
 uv run skills/sync_archive.py
 ```
 
+**Step 8: 從存檔提取 (Pull from Archive)**
+手動將存檔的內容提取回本機的 `docs` 與 `logs` 目錄（不覆蓋現有檔案），此為 Step 7 的反向操作。此指令僅限手動使用。
+```bash
+uv run skills/pull_from_archive.py
+```
+
+**特殊任務: 計算預言命中率 (Hit Rate Analysis) 【Preview】**
+讀取 `docs/每日新聞綜述/` 過去產生的歷次對比報告（需至少 5 份），對兩位分析師的預言命中率進行量化與質性分析，並輸出具體命中/未命中實例。結果將儲存至 `docs/預言命中率分析/`。
+> 由於會一次性載入大量文字稿，將消耗較多 Context Token，此指令僅限**手動執行**，未包含在自動排程中。
+
+
 ---
 
 ## 專案結構
@@ -322,7 +335,10 @@ cui-member-skill/
 │       ├── transcribe.prompt.md
 │       ├── summarize.prompt.md
 │       ├── summarize.md       # 給 LLM 的分析提示詞範本
-│       └── compare.prompt.md  # 觀點對比分析的 Agent 提示詞（模式 A/B/C 動態切換）
+│       ├── compare.prompt.md  # 觀點對比分析的 Agent 提示詞（模式 A/B/C 動態切換）
+│       ├── hit_rate.prompt.md # 計算預言命中率的 Agent 提示詞 【Preview】
+│       ├── archive.prompt.md
+│       └── pull_from_archive.prompt.md
 ├── docs/                      # 輸出目錄（按影片類型/日期分類存放）
 └── cookies.txt                # Cookies 檔案（已在 Git 中忽略）
 ```
