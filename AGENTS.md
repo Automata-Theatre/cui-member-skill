@@ -99,3 +99,4 @@
    - **步驟三：執行指令的規則**：
      - **當 `USE_CONTAINER=false` (不使用容器) 時**：在後續執行**每一次** `uv run` 等命令時，務必將「載入環境變數腳本」與「執行指令」串接在一起執行，以確保指令能吃到正確的路徑設定（例如 Mac: `source scripts/load-env.sh && uv run ...`，Windows: `. scripts/load-env.ps1; uv run ...`）。特別注意，若出現「uv command not found」通常就是因為忘記串接此腳本。若確認未安裝 `uv`，請促請使用者安裝。
      - **當 `USE_CONTAINER=true` (使用容器) 時**：請直接遵照容器的執行設定（依據 `$CONTAINER_RUNTIME` 等環境變數組裝指令），無須再於每次指令前強加載入腳本的串接。
+7. **雙平台 Agent 兼容性設計**：未來在新增任何 SKILL 或工作流（Workflow / Slash Command）時，務必確保能同時支援 Antigravity (`.agent/workflows/`) 與 GitHub Copilot (`.github/prompts/`)。具體作法為：將實際的 Prompt 內容存放在 `.github/prompts/<command>.prompt.md`，然後在 `.agent/workflows/<command>.prompt.md` 中以 `#file:../../.github/prompts/<command>.prompt.md` 的方式載入該外部提示詞，以維持兩邊行為一致。

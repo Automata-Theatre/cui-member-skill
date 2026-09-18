@@ -133,7 +133,7 @@ def copy_directory_without_overwrite(src_dir, dest_dir):
 
 def pull_docs(project_path):
     """將存檔中的頻道與綜述目錄複製到本地 docs/"""
-    dirs_to_pull = ["小翠時政財經", "美投君", "每日新聞綜述"]
+    dirs_to_pull = ["小翠時政財經", "美投君", "每日新聞綜述", "預言命中率分析"]
     total_copied = 0
     
     for d in dirs_to_pull:
