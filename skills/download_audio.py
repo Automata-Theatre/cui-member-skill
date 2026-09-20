@@ -11,6 +11,17 @@ import argparse
 from dotenv import load_dotenv
 
 def main():
+    if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except AttributeError:
+            pass
+    if sys.stderr.encoding and sys.stderr.encoding.lower() != 'utf-8':
+        try:
+            sys.stderr.reconfigure(encoding='utf-8')
+        except AttributeError:
+            pass
+
     parser = argparse.ArgumentParser(description="下載 YouTube 音訊並保留標題等中繼資料 (Metadata)")
     parser.add_argument("url", help="YouTube 影片或播放清單 URL")
     parser.add_argument("--cookies", help="Cookies 檔案路徑", default=None)
@@ -46,7 +57,9 @@ def main():
     # -o: 指定輸出檔名格式
     # --js-runtimes node: 使用 Node.js 作為 JavaScript 運行時（用於解決 YouTube n challenge）
     cmd = [
-        "yt-dlp",
+        sys.executable,
+        "-m",
+        "yt_dlp",
         "--windows-filenames",
         "-x",
         "--audio-format",
@@ -83,7 +96,9 @@ def main():
         if (cookies_file or browser) and any(kw in (e.stderr or "").lower() for kw in ["403", "forbidden", "no longer valid", "rotated"]):
             print("\n[NOTICE] 偵測到 Cookies 可能失效或過期，正在嘗試不使用 Cookies 下載公開影片...")
             retry_cmd = [
-                "yt-dlp",
+                sys.executable,
+                "-m",
+                "yt_dlp",
                 "--windows-filenames",
                 "-x",
                 "--audio-format",

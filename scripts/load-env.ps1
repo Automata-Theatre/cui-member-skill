@@ -28,6 +28,7 @@ Get-Content $envFile | ForEach-Object {
 # --- 補足預設值 ---
 if (-not $env:USE_CONTAINER) { $env:USE_CONTAINER = 'false' }
 if (-not $env:CONTAINER_RUNTIME) { $env:CONTAINER_RUNTIME = 'docker' }
+$env:PYTHONIOENCODING = 'utf-8'
 
 # --- 依據 USE_CUDA 決定容器名稱與 Compose 檔案 ---
 if ($env:USE_CUDA -eq 'true') {

@@ -11,6 +11,17 @@ import subprocess
 from dotenv import load_dotenv
 
 def main():
+    if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except AttributeError:
+            pass
+    if sys.stderr.encoding and sys.stderr.encoding.lower() != 'utf-8':
+        try:
+            sys.stderr.reconfigure(encoding='utf-8')
+        except AttributeError:
+            pass
+
     parser = argparse.ArgumentParser(description="取得指定 YouTube 頻道的最新影片標題與 URL")
     parser.add_argument("url", help="頻道的 videos 或 streams URL", default="https://www.youtube.com/@cui_news/streams", nargs="?")
     args = parser.parse_args()
@@ -26,7 +37,9 @@ def main():
 
     # yt-dlp 命令：取得最新一部影片的標題與URL
     cmd = [
-        "yt-dlp",
+        sys.executable,
+        "-m",
+        "yt_dlp",
         "--flat-playlist",
         "--print", "%(title)s|%(webpage_url)s",
         "--playlist-end", "1",
