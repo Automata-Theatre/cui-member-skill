@@ -23,10 +23,10 @@ description: '自動掃描美投侃新聞最新影片，判斷是否已下載，
 - 若需使用容器，後續指令請加上容器執行前綴，例如 `$env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run ...` (Windows) 或 `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run ...` (Mac)。
 - 若不需使用容器，則後續指令直接使用 `uv run ...` 即可。
 #### Step 1: 取得最新影片資訊
-1. 根據作業系統執行對應指令，取得「美投侃新聞」最新影片的標題與 URL：
-   - **Mac**: `uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos"` (⚠️ **極度重要**：請務必使用 `/videos` 結尾，**絕對不可**像小翠頻道一樣使用 `/streams`，因為美投頻道沒有 streams 分頁)
-   - **Windows**: 依環境設定使用容器指令（如 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos"`）或直接執行（`uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos"`） (⚠️ **極度重要**：同樣必須使用 `/videos` 結尾)
-2. 腳本會返回 `<標題>|<URL>` 的格式。請解析出該影片的 **標題** 與 **URL**。
+1. 根據作業系統執行對應指令，取得「美投侃新聞」最新影片的標題、URL 與美東上傳時間（加上 `--with-time`）：
+   - **Mac**: `uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos" --with-time` (⚠️ **極度重要**：請務必使用 `/videos` 結尾，**絕對不可**像小翠頻道一樣使用 `/streams`，因為美投頻道沒有 streams 分頁)
+   - **Windows**: 依環境設定使用容器指令（如 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos" --with-time`）或直接執行（`uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos" --with-time`） (⚠️ **極度重要**：同樣必須使用 `/videos` 結尾)
+2. 加上 `--with-time` 時腳本會返回 `<標題>|<URL>|<美東時間>` 的格式（未加時為 `<標題>|<URL>`）。請解析出該影片的 **標題**、**URL** 與 **美東時間**，並在回報時附上該影片的美東上傳時間。
 
 #### Step 2: 檢查是否已下載與處理
 1. 使用以下命令檢查剛才取得的 **URL** 是否已存在於下載紀錄中（腳本會自動解析影片 ID 並搜尋 `logs/download.log`）：

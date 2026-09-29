@@ -20,6 +20,7 @@
 | `/scan_meitou_news` | 自動檢查美投侃新聞最新影片，若未處理則觸發下載與分析 | （無） |
 | `/scan_meitou_stock` | 自動檢查美投講美股最新影片（每週日更新），若未處理則觸發下載與分析 | （無） |
 | `/process` | **總管排程 (Orchestrator)**：自動掃描三頻道，若有新影片則執行分析，並進行觀點對比與同步 | （無） |
+| `/catch_up [mode]` | **批次補齊（僅限手動）**：找出三頻道所有未下載影片，依美東日期分組，逐組完成下載→摘要→對比，最後僅對最新一組同步。`mode` 可為 `proceed`（自動處理）或 `stop`（僅列出，預設） | （選填）`proceed` / `stop` |
 | `/download <YouTube URL>` | Step 1: 下載音訊與元數據 | YouTube URL |
 | `/organize <mp3路徑>` | Step 2: AI 依 `channel` 欄位判斷類型，建立目錄並移動檔案 | `.mp3` 檔案路徑 |
 | `/transcribe <mp3路徑>` | Step 3: 語音轉文字，產生 `.txt` 文字稿 | `.mp3` 檔案路徑 |
@@ -249,6 +250,8 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.p
 
 **最推薦的方式是直接使用 `/process` 指令，讓 AI Agent 自動檢查雙頻道並處理所有流程。**
 
+若需一次補齊「多部」或「跨多日」漏抓的影片，請改用 `/catch_up`（詳見下方「批次補齊」）。
+
 ### 手動執行步驟（供參考）
 
 > **⚠️ 注意**：以下指令以 Mac 版 (`uv run`) 為例。Windows 版請先執行 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1`，之後將所有 `uv run` 指令替換為 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run`。
@@ -301,6 +304,35 @@ uv run skills/pull_from_archive.py
 讀取 `docs/每日新聞綜述/` 過去產生的歷次對比報告（需至少 5 份），對兩位分析師的預言命中率進行量化與質性分析，並輸出具體命中/未命中實例。結果將儲存至 `docs/預言命中率分析/`。
 > 由於會一次性載入大量文字稿，將消耗較多 Context Token，此指令僅限**手動執行**，未包含在自動排程中。
 
+---
+
+## 批次補齊 (Catch-up / `/catch_up`)
+
+`/catch_up` 用於**手動補處理**：一次找出三個頻道（小翠時政財經、美投侃新聞、美投講美股）**所有尚未下載**的影片，依「**美國東部時間（America/New_York）**」的日期分組，並可選擇是否一路自動處理到「每日新聞綜述」與同步。
+
+**行為與參數（`mode`）**
+| 參數 | 行為 |
+|------|------|
+| （未提供） | 先列出未下載清單，接著**主動詢問**是否繼續。使用者無回覆時採預設動作（停止）。 |
+| `stop` / `list` | 只列出清單即停止（**預設**）。 |
+| `proceed` / `auto` | 列出清單後自動逐組處理並完成最終同步。 |
+
+**處理流程**
+1. 執行 `list_new_videos.py` 掃描三頻道並以 `logs/download.log` 過濾已下載者，取得每部影片的美東時間後**依日期分組（由舊到新）**。
+2. 依 `mode` 決定停止或繼續。
+3. **逐組（由舊到新）** 對每部影片執行下載→整理→轉譯→摘要（Step 1–4），每組完成後執行一次 `/compare`（Step 5）產生該日綜述。
+4. 全部組別處理完畢後，**僅對最新一組**執行一次 `/sync_gist`（Step 6）與 `/archive`（Step 7）。
+
+```bash
+# 僅列出未下載影片（預設，不處理）
+# 直接向 AI Agent 下達：/catch_up  或  /catch_up stop
+
+# 列出後自動逐組處理並同步
+# 直接向 AI Agent 下達：/catch_up proceed
+```
+
+> **與 `/process` 的區別**：`/process` 為每日增量排程，僅抓每頻道**最新一部**影片；`/catch_up` 則可抓**多部、跨多日**並依美東日期分組逐組產生綜述，**僅供手動執行**。兩者定位不同，維持獨立、不合併。
+
 
 ---
 
@@ -322,11 +354,15 @@ cui-member-skill/
 │   └── load-env.ps1           # .env → 環境變數展開 + CUDA/CPU 容器自動選擇（PowerShell）
 ├── skills/                    # 自動化技能腳本
 │   ├── download_audio.py      # 音訊與中繼數據的下載
+│   ├── get_latest_video.py    # 取得頻道最新影片（支援 --limit 與 --with-time 美東時間）
+│   ├── list_new_videos.py     # 批次掃描三頻道未下載影片，依美東日期分組（供 /catch_up 使用）
+│   ├── log_download.py        # 下載紀錄查驗與寫入工具
 │   ├── transcribe.py          # 語音轉文字（支援 Local/OpenAI/Azure，自動判別 CPU/GPU）
 │   ├── sync_gist.py           # 同步 Gist 的腳本
 │   ├── sync_archive.py        # 本地 Git 專案同步（歸檔）腳本
 │   └── prompts/               # 各階段專屬的 Agent 提示詞與操作說明
 │       ├── process.prompt.md
+│       ├── catch_up.prompt.md # 批次補齊未下載影片（依美東日期分組，僅限手動）
 │       ├── scan_cui.prompt.md
 │       ├── scan_meitou_news.prompt.md
 │       ├── scan_meitou_stock.prompt.md

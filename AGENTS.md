@@ -18,6 +18,7 @@
 > | `/scan_cui` | 獨立掃描「小翠時政財經」並處理新影片 | （無） |
 > | `/scan_meitou_news` | 獨立掃描「美投侃新聞」並處理新影片 | （無） |
 > | `/scan_meitou_stock` | 獨立掃描「美投講美股」（每週日更新）並處理新影片 | （無） |
+> | `/catch_up` | 批次補齊: 掃描三頻道所有未下載影片，依美東日期分組，逐組處理（僅限手動） | （選填 `proceed`/`stop`，預設 `stop`） |
 > | `/download` | Step 1: 下載音訊 | YouTube URL |
 > | `/organize` | Step 2: 分類整理 | `.mp3` 檔案路徑 |
 > | `/transcribe` | Step 3: 語音轉文字 | `.mp3` 檔案路徑 |
@@ -34,6 +35,13 @@
 ### 一鍵總管排程 (Orchestrator) — `/process`
 如果你希望 AI Agent 自動掃描「小翠時政財經」、「美投侃新聞」與「美投講美股」，若有新影片則進行處理，最後產生觀點對比並同步，請直接使用無參數的 `/process`。
 > **參閱文件**：`.agent/workflows/process.prompt.md`
+
+### 批次補齊 (Catch-up) — `/catch_up`
+用於**手動補處理**多部或跨多日漏抓的影片。此指令會執行 `skills/list_new_videos.py` 掃描三頻道最新的數部影片、以 `logs/download.log` 過濾已下載者，並依「**美國東部時間（America/New_York）**」的日期分組（由舊到新）。
+- 接受可選參數 `mode`：未提供時先列出清單並主動詢問是否繼續（無回覆則預設停止）；`stop`/`list` 僅列出；`proceed`/`auto` 則自動逐組處理。
+- 繼續處理時，**依日期由舊到新逐組**執行「Step 1 下載」→「Step 4 摘要」，每組完成後執行一次「Step 5 觀點對比」；待**所有組別**處理完畢後，**僅對最新一組**執行一次「Step 6 同步 Gist」與「Step 7 同步存檔」。
+- **僅限手動執行**，未包含在 `/process` 等自動排程內。與 `/process`（每日增量、僅抓最新一部）定位不同，建議維持獨立、不合併。
+> **參閱文件**：`.agent/workflows/catch_up.prompt.md`（正本內容位於 `.github/prompts/catch_up.prompt.md`）
 
 ### Step 1: 下載音訊 (Download Audio) — `/download`
 利用 `yt-dlp` 下載影片音訊。
