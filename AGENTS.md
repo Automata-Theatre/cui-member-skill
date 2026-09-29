@@ -54,7 +54,7 @@
 ### Step 4: 摘要與分析 (Summarization & Analysis) — `/summarize`
 這一步是你展現分析能力的時候。
 閱讀指定的文字稿（`.txt`），並根據提示詞生成分析報告。
-> **參閱文件**：`.agent/workflows/summarize.prompt.md` 以及 `.agent/workflows/summarize.md`
+> **參閱文件**：`.agent/workflows/summarize.prompt.md`（正本內容位於 `.github/prompts/summarize.prompt.md`）
 
 ### Step 5: 觀點對比分析 (Comparative Analysis) — `/compare`
 讀取各頻道最新產生的摘要，並根據最新內容的類型動態切換分析模式（模式 A、B、C），自動選擇主比較對象進行多層次觀點對比與異同分析，將結果輸出至 `docs/每日新聞綜述/` 目錄。

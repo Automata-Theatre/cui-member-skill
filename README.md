@@ -270,7 +270,7 @@ uv run skills/transcribe.py "./docs/小翠時政財經/會員直播/20260717/aud
 ```
 
 **Step 4: 摘要與分析**
-依照 `skills/prompts/summarize.md` 的提示詞，讓 AI Agent 讀取 `.txt` 並生成 `summary.md` 報告。
+依照 `.github/prompts/summarize.prompt.md` 的提示詞，讓 AI Agent 讀取 `.txt` 並生成 `summary.md` 報告。
 
 **Step 5: 觀點對比分析 (每日新聞綜述)**
 根據 `skills/prompts/compare.prompt.md` 的指示，AI Agent 會先判斷最新內容的類型（每日要聞/會員直播/美投侃新聞/美投講美股），再動態選擇主比較對象，產生對比分析報告。
@@ -333,8 +333,7 @@ cui-member-skill/
 │       ├── download.prompt.md
 │       ├── organize.prompt.md
 │       ├── transcribe.prompt.md
-│       ├── summarize.prompt.md
-│       ├── summarize.md       # 給 LLM 的分析提示詞範本
+│       ├── summarize.prompt.md # 摘要與分析的 Agent 提示詞（含分析指令與輸出格式）
 │       ├── compare.prompt.md  # 觀點對比分析的 Agent 提示詞（模式 A/B/C 動態切換）
 │       ├── hit_rate.prompt.md # 計算預言命中率的 Agent 提示詞 【Preview】
 │       ├── archive.prompt.md
