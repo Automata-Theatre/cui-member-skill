@@ -30,6 +30,7 @@
 | `/archive` | Step 7: 掃描 `./archive` 配下的 Git 專案並同步文件（安全起見需手動 Push） | （無） |
 | `/pull_from_archive`| Step 8: 從存檔提取（反向操作，將 archive 專案內容提取回本地端，僅限手動執行） | （無） |
 | `/hit_rate` | 特殊任務: 計算兩位分析師的預言命中率（消耗較多 Context，僅限手動執行） 【Preview】 | （無） |
+| `/stock_eval` | 特殊任務: 以小翠 EP39「股價 = EPS × PE」框架並補強內部人/機構/經營陣容等視角，客觀評價指定公司/代碼（預設輸出 Gemini 提示詞，亦可由 Agent 分析；僅限手動執行） | 公司名稱或股票代碼 |
 
 ---
 
@@ -372,6 +373,7 @@ cui-member-skill/
 │       ├── summarize.prompt.md # 摘要與分析的 Agent 提示詞（含分析指令與輸出格式）
 │       ├── compare.prompt.md  # 觀點對比分析的 Agent 提示詞（模式 A/B/C 動態切換）
 │       ├── hit_rate.prompt.md # 計算預言命中率的 Agent 提示詞 【Preview】
+│       ├── stock_eval.prompt.md # 個股客觀評價（Gemini 提示詞／Agent 分析）
 │       ├── archive.prompt.md
 │       └── pull_from_archive.prompt.md
 ├── docs/                      # 輸出目錄（按影片類型/日期分類存放）

@@ -28,6 +28,7 @@
 > | `/archive` | Step 7: 同步至存檔 | （無） |
 > | `/pull_from_archive` | Step 8: 從存檔提取（反向操作，僅限手動執行） | （無） |
 > | `/hit_rate` | 特殊: 計算預言命中率（消耗較多 Context，僅限手動） | （無） |
+> | `/stock_eval` | 特殊: 個股客觀評價（EPS × PE 拆解與補強視角；Gemini 提示詞或 Agent 分析，僅限手動） | 公司名稱或股票代碼 |
 
 ### 自動掃描 (Auto-Scan) — `/scan_cui`, `/scan_meitou_news`, `/scan_meitou_stock`
 如果你希望 AI Agent 獨立去 YouTube 抓取個別頻道的最新影片並處理，請使用這三個指令。
@@ -72,6 +73,10 @@
 讀取 `docs/每日新聞綜述/` 過去產生的歷次報告（若少於 5 份則報錯停止），分析兩位分析師的預言命中率，並給出 3-5 個具體命中或未命中的實例。
 由於會一次讀取多份歷史報告，消耗較多 Token，此指令僅限**手動執行**，未包含在自動排程中。
 > **參閱文件**：`.agent/workflows/hit_rate.prompt.md`
+
+### 特殊任務: 個股客觀評價 — `/stock_eval`
+以小翠 EP39 會員直播提出的「股價 = EPS × PE」拆解與三個核心問題為基礎，補強內部人與大股東異動、機構持股、經營陣容、盈利品質、週期股 PE 陷阱、稀釋與籌資事件、預期修正、未決訴訟與政策風險等視角，針對指定公司名稱或股票代碼做**僅針對標的本身**的客觀評價（不涉及個人持倉與買賣建議）。未指定或無法特定標的時中斷；先查 `docs/keywords.md`，查無則以 Agent 知識判斷；預設輸出可貼到 Google Gemini 的提示詞（```text 區塊），亦可選擇由 Agent 內部分析。資料來源盡量避免簡體中文，必要時須明確標註。僅限**手動執行**，不包含在自動排程中。
+> **參閱文件**：`.agent/workflows/stock_eval.prompt.md`（正本內容位於 `.github/prompts/stock_eval.prompt.md`）
 
 ### Step 6: 同步至 Gist (Sync to Gist) — `/sync_gist`
 將生成的重點筆記與每日新聞綜述自動同步至 GitHub Gist。
