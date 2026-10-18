@@ -1,5 +1,5 @@
 """
-清理 docs 目錄下所有非 .md 的檔案（例如 .mp3、.txt、.info.json 等）。
+清理 docs 目錄下所有非 .md 的檔案（例如 .mp3、.txt、.info.json 等），保留 .gitkeep 與 .keep。
 
 預設僅列出對象檔案的數量與合計大小，不會刪除任何檔案；
 必須明確加上 --delete、--force 或 --yes 參數才會執行刪除。
@@ -8,8 +8,8 @@
   uv run skills/clean_up.py            # 僅統計（預設，不刪除）
   uv run skills/clean_up.py --list     # 統計並列出所有對象檔案
   uv run skills/clean_up.py --delete   # 實際刪除對象檔案
-    uv run skills/clean_up.py --force    # 強制刪除對象檔案
-    uv run skills/clean_up.py --yes      # 確認刪除對象檔案
+    uv run skills/clean_up.py --force  # 強制刪除對象檔案
+    uv run skills/clean_up.py --yes    # 確認刪除對象檔案
 """
 
 import argparse
@@ -20,11 +20,11 @@ DOCS_DIR = "docs"
 
 
 def find_targets():
-    """遞迴搜尋 docs 目錄下副檔名不是 .md 的檔案"""
+    """遞迴搜尋 docs 目錄下非 .md 檔案，並保留 .gitkeep 與 .keep"""
     targets = []
     for root, _dirs, files in os.walk(DOCS_DIR):
         for name in files:
-            if not name.lower().endswith(".md"):
+            if name not in {".gitkeep", ".keep"} and not name.lower().endswith(".md"):
                 targets.append(os.path.join(root, name))
     return sorted(targets)
 
