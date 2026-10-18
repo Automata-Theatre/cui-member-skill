@@ -27,6 +27,7 @@
 > | `/sync_gist` | Step 6: 同步至 Gist | （無） |
 > | `/archive` | Step 7: 同步至存檔 | （無） |
 > | `/pull_from_archive` | Step 8: 從存檔提取（反向操作，僅限手動執行） | （無） |
+> | `/clean_up` | 特殊: 清理 `docs/` 下非 `.md` 檔案（先統計數量與大小，確認後才刪除，預設不刪除，僅限手動） | （無） |
 > | `/hit_rate` | 特殊: 計算預言命中率（消耗較多 Context，僅限手動） | （無） |
 > | `/stock_eval` | 特殊: 個股客觀評價（EPS × PE 拆解與補強視角；Gemini 提示詞或 Agent 分析，僅限手動） | 公司名稱或股票代碼 |
 
@@ -95,6 +96,10 @@
 請**一律先執行對應的載入腳本** (`load-env.sh` 或 `load-env.ps1`) 取得環境變數。
 依據環境變數判斷是否需使用容器，若需使用容器則加上容器執行前綴（例如 Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/pull_from_archive.py`，Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/pull_from_archive.py`），否則直接執行 `uv run skills/pull_from_archive.py`。
 > 若 `./archive` 目錄下有多個存檔專案，將會提示使用者保留一個後再執行。
+
+### 特殊任務: 清理非 Markdown 檔案 — `/clean_up`
+以 `skills/clean_up.py` 統計 `docs/` 目錄下所有非 `.md` 檔案（如 `.mp3`、`.txt`、`.info.json`）的數量與合計大小，並以選項詢問使用者是否刪除；**預設不刪除**，僅在使用者明確選擇刪除時才加上 `--delete` 執行。手動指令 `/clean_up force` 或 `/clean_up yes` 代表明確授權，可略過詢問並強制刪除（腳本參數為 `--force` 或 `--yes`）。僅限**手動執行**，不包含在自動排程中。
+> **參閱文件**：`.agent/workflows/clean_up.prompt.md`（正本內容位於 `.github/prompts/clean_up.prompt.md`）
 
 ---
 
