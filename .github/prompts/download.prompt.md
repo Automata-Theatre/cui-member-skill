@@ -13,18 +13,30 @@ description: 'Step 1: 下載 YouTube 影片音訊與中繼資料'
 - **Windows**: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . scripts/load-env.ps1`
 
 執行後，請依據腳本輸出的環境變數或回顯結果，判斷是否需使用容器（依據 `AGENTS.md` 規則）。
+
+### 下載前：決定歸檔資料夾（日期順延判斷）
+請**先**執行以下指令，在下載前取得中繼資料、判斷分類並決定日期資料夾（需使用容器時請加上容器前綴）：
+```
+uv run skills/resolve_target_dir.py "${input:url}" --create
+```
+- 腳本依上傳日期決定 `docs/<分類>/<YYYYMMDD>/`；若該日期資料夾**已有 `summary.md`**（或其他影片的音訊／文字稿），會自動**加 1 天**，直到找到可用資料夾為止，並建立該資料夾。
+- 請解析最後一行 `TARGET_DIR=<路徑>`，作為後續所有步驟的資料夾。若有「日期順延」訊息，請在回報時說明。
+- 若輸出 `[COOKIE_ERROR]`，依下方「處理 Cookie 錯誤」規則立即終止；若輸出 `[UNKNOWN_CATEGORY]`，請改為不加 `--output-dir` 下載，再以 `/organize` 由 AI 判斷分類。
+- **禁止**建立 `summary_<影片ID>.md` 等替代檔名；同一日期資料夾只能有一份 `summary.md`。
+
+### 下載指令
 - **若需使用容器**：
   先確保容器已啟動（例如 `... compose -f <compose_file> up -d`），再執行下載指令：
-  - Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/download_audio.py "${input:url}"`
-  - Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/download_audio.py "${input:url}"`
+  - Windows: `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/download_audio.py "${input:url}" --output-dir "<TARGET_DIR>"`
+  - Mac: `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run skills/download_audio.py "${input:url}" --output-dir "<TARGET_DIR>"`
 - **若不需使用容器**：
-  直接執行：`uv run skills/download_audio.py "${input:url}"`
+  直接執行：`uv run skills/download_audio.py "${input:url}" --output-dir "<TARGET_DIR>"`
 
 ### 執行後確認事項與自動化流程
-1. 確認工作目錄下已生成 `.mp3` 音訊檔案與 `.info.json` 中繼資料檔案。
+1. 確認 `<TARGET_DIR>` 下已生成 `.mp3` 音訊檔案與 `.info.json` 中繼資料檔案。
 2. **自動進入後續處理流程**：在成功下載後，請你**自動並依序**執行接下來的處理步驟，直到完成摘要為止：
-   - 執行 `/organize` 將音訊與中繼資料歸檔到對應的分類與日期資料夾。
-   - 執行 `/transcribe` 對剛整理好的 `.mp3` 檔案進行語音轉文字。
+   - `/organize`：檔案已直接下載至 `<TARGET_DIR>`，僅需確認分類結果，**無須再移動**。
+   - 執行 `/transcribe` 對 `<TARGET_DIR>` 中的 `.mp3` 檔案進行語音轉文字。
    - 執行 `/summarize` 針對轉換出的文字稿 (`.txt`) 進行分析與摘要。
 3. 全部完成後，向使用者回報流程執行完畢與各檔案產生的結果。
 

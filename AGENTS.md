@@ -46,7 +46,7 @@
 > **參閱文件**：`.agent/workflows/catch_up.prompt.md`（正本內容位於 `.github/prompts/catch_up.prompt.md`）
 
 ### Step 1: 下載音訊 (Download Audio) — `/download`
-利用 `yt-dlp` 下載影片音訊。
+下載前先以 `skills/resolve_target_dir.py` 取得中繼資料並決定歸檔資料夾：若上傳日期的資料夾已有 `summary.md`（或其他影片），自動**加 1 天**順延；再以 `skills/download_audio.py --output-dir <TARGET_DIR>` 利用 `yt-dlp` 直接下載至該資料夾。同一日期資料夾只能有一份 `summary.md`，禁止建立 `summary_<影片ID>.md`。
 > **參閱文件**：`.agent/workflows/download.prompt.md`
 
 ### Step 2: 判斷與分類整理 (Categorization & Organizing) — `/organize`

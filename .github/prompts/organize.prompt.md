@@ -23,6 +23,9 @@ description: 'Step 2: 判斷影片類型並整理至 docs/ 目錄'
        - 無法判斷子類型 ➔ 預設分類為 `小翠時政財經/會員直播`
      - 若無法匹配上述情況，但包含「美投」關鍵字 ➔ 預設分類為 `美投君/美投侃新聞`
 4. **提取日期**：從 `read_metadata.py` 輸出的 `上傳日期` 欄位取得日期（格式：`YYYYMMDD`）。
+   - **日期順延規則**：若 `docs/<Channel>/[<SubFolder>/]<Date>/` 已存在 `summary.md`（或其他影片的 `.mp3`／`.info.json`／`.txt`），代表該日期已被其他影片使用，請將日期**加 1 天**後再判斷，直到找到可用資料夾為止。可直接執行 `uv run skills/resolve_target_dir.py --info-json <info.json 路徑> --create`，以輸出的 `TARGET_DIR=` 作為目標資料夾。
+   - **禁止**建立 `summary_<影片ID>.md` 等替代檔名。
+   - 若檔案已由 `/download --output-dir` 直接下載至目標資料夾，本步驟僅需確認，無須重新判斷或移動。
 5. **建立目錄**：建立 `./docs/<Channel>/[<SubFolder>/]<Date>/` 資料夾（例如 `./docs/小翠時政財經/每日要聞/20260805/` 或 `./docs/美投君/美投侃新聞/20260805/` 或 `./docs/美投君/美投講美股/20260802/`）。
 6. **移動檔案**：將 `.mp3` 與 `.info.json` 移動到該目錄下。
 

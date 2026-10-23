@@ -26,7 +26,13 @@ def main():
     parser.add_argument("url", help="YouTube 影片或播放清單 URL")
     parser.add_argument("--cookies", help="Cookies 檔案路徑", default=None)
     parser.add_argument("--browser", help="從指定的瀏覽器直接讀取 Cookies (例如 firefox, chrome, safari, edge)", default=None)
+    parser.add_argument("--output-dir", help="輸出資料夾（通常為 resolve_target_dir.py 決定的 TARGET_DIR），預設為當前目錄", default=None)
     args = parser.parse_args()
+
+    output_template = "%(id)s.%(ext)s"
+    if args.output_dir:
+        os.makedirs(args.output_dir, exist_ok=True)
+        output_template = os.path.join(args.output_dir, output_template)
 
     # 載入 .env
     load_dotenv()
@@ -66,7 +72,7 @@ def main():
         "mp3",
         "--write-info-json",
         "-o",
-        "%(id)s.%(ext)s",
+        output_template,
         "--js-runtimes",
         "node",
         "--remote-components",
@@ -105,7 +111,7 @@ def main():
                 "mp3",
                 "--write-info-json",
                 "-o",
-                "%(id)s.%(ext)s",
+                output_template,
                 "--js-runtimes",
                 "node",
                 "--remote-components",

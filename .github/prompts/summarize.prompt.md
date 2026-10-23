@@ -13,6 +13,7 @@ description: 'Step 4: 閱讀文字稿並生成摘要與投資分析報告'
 3. **閱讀輸出模板**：開啟 `skills/templates/summarize_template.md`，閱讀其結構與 HTML 註解中的撰寫規範，確保輸出格式完全遵照模板。
 4. **生成摘要報告**：根據下方「分析指令」與模板的格式規範，產生結構化的 Markdown 分析報告。
 5. **儲存結果**：將報告保存為與文字稿同一目錄下的 `summary.md`。
+   - 若該目錄已存在**其他影片**的 `summary.md`，**不可**覆寫，也**不可**另存為 `summary_<影片ID>.md`；請以 `uv run skills/resolve_target_dir.py --info-json <info.json 路徑> --create` 取得順延後的資料夾，將該影片的 `.mp3`、`.info.json`、`.txt` 移入後，再於新資料夾建立 `summary.md`。
 
 ---
 

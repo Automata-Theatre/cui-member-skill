@@ -38,8 +38,8 @@ description: '自動掃描美投講美股最新影片（每週日更新），判
 
 #### Step 3: 執行處理流程 (處理新影片)
 既然這是一部新影片，請你自動針對剛取得的 **URL** 依序執行以下操作：
-1. **下載**: 執行 `/download` (或使用 `skills/download_audio.py`) 下載音訊。
-2. **分類**: 執行 `/organize` 將檔案移至 `docs/美投君/美投講美股/YYYYMMDD/`。
+1. **下載**: 執行 `/download`，先以 `skills/resolve_target_dir.py` 決定歸檔資料夾（同日已有 `summary.md` 時自動順延一天），再以 `--output-dir` 直接下載至該資料夾。
+2. **分類**: `/organize` 僅需確認分類結果（檔案已在 `docs/美投君/美投講美股/YYYYMMDD/`）。
 3. **轉譯**: 執行 `/transcribe` 產生文字稿。
 4. **摘要**: 執行 `/summarize` 產生投資分析報告 (`summary.md`)。
 5. **結束任務**: 若你是單獨執行 `/scan_meitou_stock`，請到此（完成 `/summarize`）為止，向使用者回報「美投講美股：新影片已下載並完成摘要」，**不要**接着執行 `/scan_cui`、`/scan_meitou_news`、`/compare`、`/sync_gist` 或 `/archive`。
