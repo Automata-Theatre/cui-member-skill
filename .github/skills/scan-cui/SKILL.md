@@ -1,8 +1,8 @@
 ---
-mode: 'agent'
+name: scan-cui
 description: '自動掃描小翠時政財經最新影片，判斷是否已下載，若無則自動執行處理流程'
+disable-model-invocation: true
 ---
-
 ## 任務：自動掃描最新影片 (Auto-Scan)
 
 請你執行 `/scan_cui` 的自動化掃描任務。

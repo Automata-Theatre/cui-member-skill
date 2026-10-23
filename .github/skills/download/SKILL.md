@@ -1,8 +1,8 @@
 ---
-mode: 'agent'
+name: download
 description: 'Step 1: 下載 YouTube 影片音訊與中繼資料'
+disable-model-invocation: true
 ---
-
 ## 任務：下載音訊 (Download Audio)
 
 請根據使用者的作業系統（OS）使用對應的指令下載 YouTube 影片音訊：

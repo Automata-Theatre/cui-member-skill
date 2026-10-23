@@ -1,8 +1,8 @@
 ---
-mode: 'agent'
+name: process
 description: '一鍵完成全頻道掃描與任務排程：掃描、下載、分類、轉文字、摘要、對比與同步 (全自動 orchestrator)'
+disable-model-invocation: true
 ---
-
 ## 任務：全自動頻道掃描與處理流水線 (Orchestrator)
 
 這是一鍵執行命令，不需要任何參數。請你作為 Orchestrator，自動依序完成以下任務：

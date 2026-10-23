@@ -1,8 +1,8 @@
 ---
-mode: 'agent'
+name: catch-up
 description: '批次補處理：掃描三頻道未下載影片，依美東日期分組，逐組執行下載→摘要→對比，最後僅對最新一組同步'
+disable-model-invocation: true
 ---
-
 ## 任務：批次補齊未下載影片 (Catch-up / Backfill)
 
 請你執行 `/catch_up` 任務。此技能用於**手動補處理**：一次找出三個頻道（小翠時政財經、美投侃新聞、美投講美股）**所有尚未下載**的影片，依「**美國東部時間（America/New_York）**」的日期分組，並可選擇是否一路自動處理到「每日新聞綜述」與同步。

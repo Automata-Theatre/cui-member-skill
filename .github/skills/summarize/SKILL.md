@@ -1,8 +1,8 @@
 ---
-mode: 'agent'
+name: summarize
 description: 'Step 4: 閱讀文字稿並生成摘要與投資分析報告'
+disable-model-invocation: true
 ---
-
 ## 任務：摘要與分析 (Summarization & Analysis)
 
 請閱讀使用者指定的文字稿檔案，並依照本文件的分析指令與輸出格式規範生成分析報告。

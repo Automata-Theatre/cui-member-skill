@@ -1,11 +1,11 @@
 ---
-mode: 'agent'
-description: '自動掃描美投侃新聞最新影片，判斷是否已下載，若無則自動執行處理流程'
+name: scan-meitou-stock
+description: '自動掃描美投講美股最新影片（每週日更新），判斷是否已下載，若無則自動執行處理流程'
+disable-model-invocation: true
 ---
+## 任務：自動掃描「美投講美股」最新影片 (Auto-Scan)
 
-## 任務：自動掃描「美投侃新聞」最新影片 (Auto-Scan)
-
-請你執行 `/scan_meitou_news` 的自動化掃描任務。
+請你執行 `/scan_meitou_stock` 的自動化掃描任務。
 
 ### 執行步驟
 
@@ -23,9 +23,9 @@ description: '自動掃描美投侃新聞最新影片，判斷是否已下載，
 - 若需使用容器，後續指令請加上容器執行前綴，例如 `$env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run ...` (Windows) 或 `$CONTAINER_RUNTIME exec $CUI_CONTAINER uv run ...` (Mac)。
 - 若不需使用容器，則後續指令直接使用 `uv run ...` 即可。
 #### Step 1: 取得最新影片資訊
-1. 根據作業系統執行對應指令，取得「美投侃新聞」最新影片的標題、URL 與美東上傳時間（加上 `--with-time`）：
-   - **Mac**: `uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos" --with-time` (⚠️ **極度重要**：請務必使用 `/videos` 結尾，**絕對不可**像小翠頻道一樣使用 `/streams`，因為美投頻道沒有 streams 分頁)
-   - **Windows**: 依環境設定使用容器指令（如 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos" --with-time`）或直接執行（`uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouNews/videos" --with-time`） (⚠️ **極度重要**：同樣必須使用 `/videos` 結尾)
+1. 根據作業系統執行對應指令，取得「美投講美股」最新影片的標題、URL 與美東上傳時間（加上 `--with-time`）：
+   - **Mac**: `uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouJun/videos" --with-time` (⚠️ **極度重要**：請務必使用 `/videos` 結尾，**絕對不可**像小翠頻道一樣使用 `/streams`，因為美投頻道沒有 streams 分頁)
+   - **Windows**: 依環境設定使用容器指令（如 `& $env:CONTAINER_RUNTIME exec $env:CUI_CONTAINER uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouJun/videos" --with-time`）或直接執行（`uv run skills/get_latest_video.py "https://www.youtube.com/@MeiTouJun/videos" --with-time`） (⚠️ **極度重要**：同樣必須使用 `/videos` 結尾)
 2. 加上 `--with-time` 時腳本會返回 `<標題>|<URL>|<美東時間>` 的格式（未加時為 `<標題>|<URL>`）。請解析出該影片的 **標題**、**URL** 與 **美東時間**，並在回報時附上該影片的美東上傳時間。
 
 #### Step 2: 檢查是否已下載與處理
@@ -33,17 +33,17 @@ description: '自動掃描美投侃新聞最新影片，判斷是否已下載，
    - **Mac**: `uv run skills/log_download.py check "<URL>"`
    - **Windows**: 依環境設定使用容器指令或直接執行 `uv run skills/log_download.py check "<URL>"`
 2. 判斷邏輯：
-   - 若輸出 `[FOUND]`（結束代碼 0），代表已經處理過。請向使用者回報「美投侃新聞：最新影片已處理過，無須重新下載」，並 **結束此任務**。
+   - 若輸出 `[FOUND]`（結束代碼 0），代表已經處理過。請向使用者回報「美投講美股：最新影片已處理過，無須重新下載」，並 **結束此任務**。
    - 若輸出 `[NOT_FOUND]`（結束代碼 1），代表這是新的未處理影片，請進入 Step 3。
 
 #### Step 3: 執行處理流程 (處理新影片)
 既然這是一部新影片，請你自動針對剛取得的 **URL** 依序執行以下操作：
 1. **下載**: 執行 `/download`，先以 `skills/resolve_target_dir.py` 決定歸檔資料夾（同日已有 `summary.md` 時自動順延一天），再以 `--output-dir` 直接下載至該資料夾。
-2. **分類**: `/organize` 僅需確認分類結果（檔案已在 `docs/美投君/美投侃新聞/YYYYMMDD/`）。
+2. **分類**: `/organize` 僅需確認分類結果（檔案已在 `docs/美投君/美投講美股/YYYYMMDD/`）。
 3. **轉譯**: 執行 `/transcribe` 產生文字稿。
 4. **摘要**: 執行 `/summarize` 產生投資分析報告 (`summary.md`)。
-5. **結束任務**: 若你是單獨執行 `/scan_meitou_news`，請到此（完成 `/summarize`）為止，向使用者回報「美投侃新聞：新影片已下載並完成摘要」，**不要**接著執行 `/scan_cui`、`/scan_meitou_stock`、`/compare`、`/sync_gist` 或 `/archive`。
+5. **結束任務**: 若你是單獨執行 `/scan_meitou_stock`，請到此（完成 `/summarize`）為止，向使用者回報「美投講美股：新影片已下載並完成摘要」，**不要**接着執行 `/scan_cui`、`/scan_meitou_news`、`/compare`、`/sync_gist` 或 `/archive`。
 
 ### 注意
-- **⚠️ 處理 Cookie 錯誤（[COOKIE_ERROR]）**：若執行 `get_latest_video.py` 或 `download_audio.py` 時遇到 `[COOKIE_ERROR]` 或因 YouTube 認證失敗而中斷，請**立即終止**所有後續流程。請向使用者提示目前的 Cookie 檔案路徑，並詢問處理解決方案。
+- **⚠️ 處理 Cookie 錯誤（[COOKIE_ERROR]）**：若執行 `get_latest_video.py` 或 `download_audio.py` 時遇到 `[COOKIE_ERROR]` 或因 YouTube 認證失敗而中斷，請**開啟**終止所有後續流程。請向使用者提示目前的 Cookie 檔案路徑，並詢問處理解決方案。
 - 回報與執行結果請使用**繁體中文**。

@@ -1,8 +1,8 @@
 ---
-mode: 'agent'
+name: transcribe
 description: 'Step 3: 使用 Whisper 將音訊轉為文字稿'
+disable-model-invocation: true
 ---
-
 ## 任務：語音轉文字 (Transcription)
 
 請根據使用者的作業系統（OS）使用對應的指令，將指定的音訊檔案轉為文字稿：

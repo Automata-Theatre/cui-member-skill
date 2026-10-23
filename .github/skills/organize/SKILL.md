@@ -1,8 +1,8 @@
 ---
-mode: 'agent'
+name: organize
 description: 'Step 2: 判斷影片類型並整理至 docs/ 目錄'
+disable-model-invocation: true
 ---
-
 ## 任務：判斷與分類整理 (Categorization & Organizing)
 
 請發揮你的 AI 判斷能力，將使用者指定的音訊檔案（`${input:audioFilePath}`）整理至對應的分類資料夾。

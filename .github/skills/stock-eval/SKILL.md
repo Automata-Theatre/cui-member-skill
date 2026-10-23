@@ -1,8 +1,8 @@
 ---
-mode: 'agent'
+name: stock-eval
 description: '特殊任務: 以「股價 = EPS × PE」拆解為核心，並補強內部人/大股東/機構/經營陣容/盈利品質/訴訟與政策風險等視角，客觀評價指定公司或股票代碼（Gemini 提示詞或 Agent 內部分析，僅限手動執行）'
+disable-model-invocation: true
 ---
-
 ## 任務：個股客觀評價 (Stock Evaluation)
 
 請你執行 `/stock_eval` 任務。此技能的設計參考小翠時政財經【EP39】會員直播，以下列框架為核心：

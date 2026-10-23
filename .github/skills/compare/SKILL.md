@@ -1,8 +1,8 @@
 ---
-mode: 'agent'
+name: compare
 description: 'Step 5: 對比每日要聞與美投侃新聞最新摘要，產生觀點對比的每日新聞綜述'
+disable-model-invocation: true
 ---
-
 ## 任務：觀點對比分析 (Comparative Analysis)
 
 請讀取平日更新的「每日要聞」（小翠時政財經）與「美投侃新聞」最新產生的摘要報告，進行跨頻道的觀點對比與異同分析，並參考近期的每日新聞綜述觀察趨勢延續。

@@ -1,8 +1,8 @@
 ---
-mode: 'agent'
+name: hit-rate
 description: '特殊任務: 計算兩位分析師的預言命中率（僅限手動執行）'
+disable-model-invocation: true
 ---
-
 ## 任務：計算預言命中率 (Prediction Hit Rate Analysis)
 
 請讀取 `docs/每日新聞綜述/` 目錄下的歷次對比報告，對這兩位分析師（小翠與美投 Jason）的預言命中率進行量化與質性分析，並輸出為獨立的分析報告。

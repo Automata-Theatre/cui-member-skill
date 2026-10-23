@@ -1,7 +1,8 @@
 ---
+name: pull-from-archive
 description: "手動從 archive 目錄的 Git 專案中提取資料回本地端"
+disable-model-invocation: true
 ---
-
 ## /pull_from_archive
 
 此指令會將存檔在 `./archive` 目錄下專案內的資料提取回本專案。

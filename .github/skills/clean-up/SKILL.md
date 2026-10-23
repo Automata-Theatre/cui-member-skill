@@ -1,7 +1,8 @@
 ---
+name: clean-up
 description: "清理 docs 目錄下的非 .md 檔案（僅限手動執行，預設不刪除）"
+disable-model-invocation: true
 ---
-
 ## /clean_up
 
 此指令會統計 `./docs` 目錄下（含所有子目錄）**副檔名不是 `.md`** 的檔案（例如 `.mp3`、`.txt`、`.info.json` 等），但一律保留名稱為 `.gitkeep` 或 `.keep` 的檔案。一般啟動時預設不刪除；只有在取得使用者明確同意，或使用者以 `force`／`yes` 參數啟動時才刪除。
