@@ -278,7 +278,7 @@ uv run skills/transcribe.py "./docs/小翠時政財經/會員直播/20260717/aud
 依照 `.github/prompts/summarize.prompt.md` 的提示詞，讓 AI Agent 讀取 `.txt` 並生成 `summary.md` 報告。
 
 **Step 5: 觀點對比分析 (每日新聞綜述)**
-根據 `skills/prompts/compare.prompt.md` 的指示，AI Agent 會先判斷最新內容的類型（每日要聞/會員直播/美投侃新聞/美投講美股），再動態選擇主比較對象，產生對比分析報告。
+根據 `skills/prompts/compare.prompt.md` 的指示，AI Agent 會以「每日要聞」與「美投侃新聞」的最新摘要進行對比（週更的「會員直播」「美投講美股」不納入），並參考 4 天以內的前次／前前次綜述觀察趨勢，產生對比分析報告；若兩者皆無 2 天以內的更新或已輸出過，則略過。
 
 **Step 6: 同步至 Gist (選擇性)**
 將各分類的最新分析報告與每日新聞綜述上傳至 Gist，自動覆蓋並清理舊檔以維持頁面整潔。
@@ -373,7 +373,7 @@ cui-member-skill/
 │       ├── organize.prompt.md
 │       ├── transcribe.prompt.md
 │       ├── summarize.prompt.md # 摘要與分析的 Agent 提示詞（含分析指令與輸出格式）
-│       ├── compare.prompt.md  # 觀點對比分析的 Agent 提示詞（模式 A/B/C 動態切換）
+│       ├── compare.prompt.md  # 觀點對比分析的 Agent 提示詞（每日要聞 × 美投侃新聞）
 │       ├── hit_rate.prompt.md # 計算預言命中率的 Agent 提示詞 【Preview】
 │       ├── stock_eval.prompt.md # 個股客觀評價（Gemini 提示詞／Agent 分析）
 │       ├── archive.prompt.md

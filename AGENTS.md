@@ -67,7 +67,7 @@
 > **參閱文件**：`.agent/workflows/summarize.prompt.md`（正本內容位於 `.github/prompts/summarize.prompt.md`）
 
 ### Step 5: 觀點對比分析 (Comparative Analysis) — `/compare`
-讀取各頻道最新產生的摘要，並根據最新內容的類型動態切換分析模式（模式 A、B、C），自動選擇主比較對象進行多層次觀點對比與異同分析，將結果輸出至 `docs/每日新聞綜述/` 目錄。
+僅以平日更新的「每日要聞」與「美投侃新聞」最新摘要進行觀點對比（週更的「會員直播」「美投講美股」不納入），並參考 4 天以內的前次／前前次綜述觀察趨勢延續，將結果輸出至 `docs/每日新聞綜述/` 目錄。若兩者皆無 2 天以內的更新，或最新節目已輸出過綜述，則略過並進入下一步。
 > **參閱文件**：`.agent/workflows/compare.prompt.md`
 
 ### 特殊任務: 計算預言命中率 — `/hit_rate`
