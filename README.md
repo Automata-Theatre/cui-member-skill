@@ -275,10 +275,10 @@ uv run skills/transcribe.py "./docs/小翠時政財經/會員直播/20260717/aud
 ```
 
 **Step 4: 摘要與分析**
-依照 `.github/prompts/summarize.prompt.md` 的提示詞，讓 AI Agent 讀取 `.txt` 並生成 `summary.md` 報告。
+依照 `.github/skills/summarize/SKILL.md` 的提示詞，讓 AI Agent 讀取 `.txt` 並生成 `summary.md` 報告。
 
 **Step 5: 觀點對比分析 (每日新聞綜述)**
-根據 `skills/prompts/compare.prompt.md` 的指示，AI Agent 會以「每日要聞」與「美投侃新聞」的最新摘要進行對比（週更的「會員直播」「美投講美股」不納入），並參考 4 天以內的前次／前前次綜述觀察趨勢，產生對比分析報告；若兩者皆無 2 天以內的更新或已輸出過，則略過。
+根據 `.github/skills/compare/SKILL.md` 的指示，AI Agent 會以「每日要聞」與「美投侃新聞」的最新摘要進行對比（週更的「會員直播」「美投講美股」不納入），並參考 4 天以內的前次／前前次綜述觀察趨勢，產生對比分析報告；若兩者皆無 2 天以內的更新或已輸出過，則略過。
 
 **Step 6: 同步至 Gist (選擇性)**
 將各分類的最新分析報告與每日新聞綜述上傳至 Gist，自動覆蓋並清理舊檔以維持頁面整潔。
@@ -362,23 +362,19 @@ cui-member-skill/
 │   ├── transcribe.py          # 語音轉文字（支援 Local/OpenAI/Azure，自動判別 CPU/GPU）
 │   ├── sync_gist.py           # 同步 Gist 的腳本
 │   ├── sync_archive.py        # 本地 Git 專案同步（歸檔）腳本
-│   ├── clean_up.py            # 清理 docs 下非 .md 檔案（預設僅統計，不刪除）
-│   └── prompts/               # 各階段專屬的 Agent 提示詞與操作說明
-│       ├── process.prompt.md
-│       ├── catch_up.prompt.md # 批次補齊未下載影片（依美東日期分組，僅限手動）
-│       ├── scan_cui.prompt.md
-│       ├── scan_meitou_news.prompt.md
-│       ├── scan_meitou_stock.prompt.md
-│       ├── download.prompt.md
-│       ├── organize.prompt.md
-│       ├── transcribe.prompt.md
-│       ├── summarize.prompt.md # 摘要與分析的 Agent 提示詞（含分析指令與輸出格式）
-│       ├── compare.prompt.md  # 觀點對比分析的 Agent 提示詞（每日要聞 × 美投侃新聞）
-│       ├── hit_rate.prompt.md # 計算預言命中率的 Agent 提示詞 【Preview】
-│       ├── stock_eval.prompt.md # 個股客觀評價（Gemini 提示詞／Agent 分析）
-│       ├── archive.prompt.md
-│       ├── pull_from_archive.prompt.md
-│       └── clean_up.prompt.md # 清理 docs 下非 .md 檔案（僅限手動）
+│   └── clean_up.py            # 清理 docs 下非 .md 檔案（預設僅統計，不刪除）
+├── .github/skills/            # GitHub Copilot Skills（各指令提示詞正本，<name>/SKILL.md）
+│   ├── process/               # 一鍵總管排程
+│   ├── catch-up/              # 批次補齊未下載影片（依美東日期分組，僅限手動）
+│   ├── scan-cui/ · scan-meitou-news/ · scan-meitou-stock/
+│   ├── download/ · organize/ · transcribe/
+│   ├── summarize/             # 摘要與分析（含分析指令與輸出格式）
+│   ├── compare/               # 觀點對比分析（每日要聞 × 美投侃新聞）
+│   ├── hit-rate/              # 計算預言命中率 【Preview】
+│   ├── stock-eval/            # 個股客觀評價（Gemini 提示詞／Agent 分析）
+│   ├── sync-gist/ · archive/ · pull-from-archive/
+│   └── clean-up/              # 清理 docs 下非 .md 檔案（僅限手動）
+├── .agent/workflows/          # Antigravity 工作流（以 #file: 載入 .github/skills/<name>/SKILL.md）
 ├── docs/                      # 輸出目錄（按影片類型/日期分類存放）
 └── cookies.txt                # Cookies 檔案（已在 Git 中忽略）
 ```

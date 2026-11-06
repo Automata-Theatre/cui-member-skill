@@ -7,4 +7,4 @@ disable-model-invocation: true
 
 > **注意**：處理時，請注意 `docs/預言命中率分析` 下是否有最新的報告，有的話也會被 Python 腳本抓取並同步至 Gist。
 
-#file:../../AGENTS.md
+#file:../../../AGENTS.md

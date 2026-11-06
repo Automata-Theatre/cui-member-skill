@@ -6,4 +6,4 @@ description: '特殊任務: 以「股價 = EPS × PE」拆解為核心，並補�
 # 載入外部提示詞
 請執行以下檔案中定義的指示。
 
-#file:../../.github/prompts/stock_eval.prompt.md
+#file:../../.github/skills/stock-eval/SKILL.md

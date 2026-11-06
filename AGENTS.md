@@ -43,7 +43,7 @@
 - 接受可選參數 `mode`：未提供時先列出清單並主動詢問是否繼續（無回覆則預設停止）；`stop`/`list` 僅列出；`proceed`/`auto` 則自動逐組處理。
 - 繼續處理時，**依日期由舊到新逐組**執行「Step 1 下載」→「Step 4 摘要」，每組完成後執行一次「Step 5 觀點對比」；待**所有組別**處理完畢後，**僅對最新一組**執行一次「Step 6 同步 Gist」與「Step 7 同步存檔」。
 - **僅限手動執行**，未包含在 `/process` 等自動排程內。與 `/process`（每日增量、僅抓最新一部）定位不同，建議維持獨立、不合併。
-> **參閱文件**：`.agent/workflows/catch_up.prompt.md`（正本內容位於 `.github/prompts/catch_up.prompt.md`）
+> **參閱文件**：`.agent/workflows/catch_up.prompt.md`（正本內容位於 `.github/skills/catch-up/SKILL.md`）
 
 ### Step 1: 下載音訊 (Download Audio) — `/download`
 下載前先以 `skills/resolve_target_dir.py` 取得中繼資料並決定歸檔資料夾：若上傳日期的資料夾已有 `summary.md`（或其他影片），自動**加 1 天**順延；再以 `skills/download_audio.py --output-dir <TARGET_DIR>` 利用 `yt-dlp` 直接下載至該資料夾。同一日期資料夾只能有一份 `summary.md`，禁止建立 `summary_<影片ID>.md`。
@@ -64,7 +64,7 @@
 ### Step 4: 摘要與分析 (Summarization & Analysis) — `/summarize`
 這一步是你展現分析能力的時候。
 閱讀指定的文字稿（`.txt`），並根據提示詞生成分析報告。
-> **參閱文件**：`.agent/workflows/summarize.prompt.md`（正本內容位於 `.github/prompts/summarize.prompt.md`）
+> **參閱文件**：`.agent/workflows/summarize.prompt.md`（正本內容位於 `.github/skills/summarize/SKILL.md`）
 
 ### Step 5: 觀點對比分析 (Comparative Analysis) — `/compare`
 僅以平日更新的「每日要聞」與「美投侃新聞」最新摘要進行觀點對比（週更的「會員直播」「美投講美股」不納入），並參考 4 天以內的前次／前前次綜述觀察趨勢延續，將結果輸出至 `docs/每日新聞綜述/` 目錄。若兩者皆無 2 天以內的更新，或最新節目已輸出過綜述，則略過並進入下一步。
@@ -77,7 +77,7 @@
 
 ### 特殊任務: 個股客觀評價 — `/stock_eval`
 以小翠 EP39 會員直播提出的「股價 = EPS × PE」拆解與三個核心問題為基礎，補強內部人與大股東異動、機構持股、經營陣容、盈利品質、週期股 PE 陷阱、稀釋與籌資事件、預期修正、未決訴訟與政策風險等視角，針對指定公司名稱或股票代碼做**僅針對標的本身**的客觀評價（不涉及個人持倉與買賣建議）。未指定或無法特定標的時中斷；先查 `docs/keywords.md`，查無則以 Agent 知識判斷；預設輸出可貼到 Google Gemini 的提示詞（```text 區塊），亦可選擇由 Agent 內部分析。資料來源盡量避免簡體中文，必要時須明確標註。僅限**手動執行**，不包含在自動排程中。
-> **參閱文件**：`.agent/workflows/stock_eval.prompt.md`（正本內容位於 `.github/prompts/stock_eval.prompt.md`）
+> **參閱文件**：`.agent/workflows/stock_eval.prompt.md`（正本內容位於 `.github/skills/stock-eval/SKILL.md`）
 
 ### Step 6: 同步至 Gist (Sync to Gist) — `/sync_gist`
 將生成的重點筆記與每日新聞綜述自動同步至 GitHub Gist。
@@ -99,7 +99,7 @@
 
 ### 特殊任務: 清理非 Markdown 檔案 — `/clean_up`
 以 `skills/clean_up.py` 統計 `docs/` 目錄下所有非 `.md` 檔案（如 `.mp3`、`.txt`、`.info.json`）的數量與合計大小，`.gitkeep` 與 `.keep` 一律排除。並以選項詢問使用者是否刪除；**預設不刪除**，僅在使用者明確選擇刪除時才加上 `--delete` 執行。手動指令 `/clean_up force` 或 `/clean_up yes` 代表明確授權，可略過詢問並強制刪除（腳本參數為 `--force` 或 `--yes`）。僅限**手動執行**，不包含在自動排程中。
-> **參閱文件**：`.agent/workflows/clean_up.prompt.md`（正本內容位於 `.github/prompts/clean_up.prompt.md`）
+> **參閱文件**：`.agent/workflows/clean_up.prompt.md`（正本內容位於 `.github/skills/clean-up/SKILL.md`）
 
 ---
 
@@ -117,4 +117,4 @@
    - **步驟三：執行指令的規則**：
      - **當 `USE_CONTAINER=false` (不使用容器) 時**：在後續執行**每一次** `uv run` 等命令時，務必將「載入環境變數腳本」與「執行指令」串接在一起執行，以確保指令能吃到正確的路徑設定（例如 Mac: `source scripts/load-env.sh && uv run ...`，Windows: `. scripts/load-env.ps1; uv run ...`）。特別注意，若出現「uv command not found」通常就是因為忘記串接此腳本。若確認未安裝 `uv`，請促請使用者安裝。
      - **當 `USE_CONTAINER=true` (使用容器) 時**：請直接遵照容器的執行設定（依據 `$CONTAINER_RUNTIME` 等環境變數組裝指令），無須再於每次指令前強加載入腳本的串接。
-7. **雙平台 Agent 兼容性設計**：未來在新增任何 SKILL 或工作流（Workflow / Slash Command）時，務必確保能同時支援 Antigravity (`.agent/workflows/`) 與 GitHub Copilot (`.github/prompts/`)。具體作法為：將實際的 Prompt 內容存放在 `.github/prompts/<command>.prompt.md`，然後在 `.agent/workflows/<command>.prompt.md` 中以 `#file:../../.github/prompts/<command>.prompt.md` 的方式載入該外部提示詞，以維持兩邊行為一致。
+7. **雙平台 Agent 兼容性設計**：未來在新增任何 SKILL 或工作流（Workflow / Slash Command）時，務必確保能同時支援 Antigravity (`.agent/workflows/`) 與 GitHub Copilot (`.github/skills/`)。具體作法為：將實際的 Prompt 內容存放在 `.github/skills/<command-kebab>/SKILL.md`（目錄名稱使用 kebab-case，例如 `catch_up` → `catch-up`，並於 frontmatter 設定 `name` 與 `description`），然後在 `.agent/workflows/<command>.prompt.md` 中以 `#file:../../.github/skills/<command-kebab>/SKILL.md` 的方式載入該外部提示詞，以維持兩邊行為一致。注意 `SKILL.md` 位於 `.github/skills/<name>/` 下，若需引用專案根目錄檔案，相對路徑需為 `../../../`（例如 `#file:../../../AGENTS.md`）。
