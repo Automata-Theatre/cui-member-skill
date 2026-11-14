@@ -14,6 +14,8 @@
 
 將以下指令直接貼給 AI Agent（如本聊天視窗），Agent 將自動完成對應步驟。
 
+> **GitHub Copilot 使用者請注意**：Copilot 依 `.github/skills/` 的技能名稱呼叫指令，請將底線 `_` 改為連字號 `-`（例如 `/catch_up` → `/catch-up`、`/sync_gist` → `/sync-gist`）。Antigravity 則照下表使用底線。
+
 | 指令 | 功能 | 必要輸入 |
 |------|------|----------|
 | `/scan_cui` | 自動檢查小翠最新直播，若未處理則觸發下載與分析 | （無） |
